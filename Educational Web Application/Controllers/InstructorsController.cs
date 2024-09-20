@@ -62,10 +62,6 @@ namespace EducationalWebApplication.Controllers
         [HttpPost]
         public IActionResult Edit(InstWithCoursAndDepartsViewModel editedIns)
         {
-            string nonce = Convert.ToBase64String(Encoding.UTF8.GetBytes(Guid.NewGuid().ToString()));
-            Response.Headers.Add("Content-Security-Policy", $"script-src 'self' 'nonce-{nonce}';");
-            ViewBag.Nonce = nonce; // Pass the nonce to your view
-
             if (editedIns != null)
             {
                 var ins = _context.Instructors
@@ -102,10 +98,6 @@ namespace EducationalWebApplication.Controllers
         [HttpPost]
         public IActionResult Create(InstWithCoursAndDepartsViewModel editedIns)
         {
-            string nonce = Convert.ToBase64String(Encoding.UTF8.GetBytes(Guid.NewGuid().ToString()));
-            Response.Headers.Add("Content-Security-Policy", $"script-src 'self' 'nonce-{nonce}';");
-            ViewBag.Nonce = nonce; // Pass the nonce to your view
-
             if (editedIns != null)
             {
                 var ins = new Instructor();
@@ -144,10 +136,6 @@ namespace EducationalWebApplication.Controllers
         [ActionName("Delete")]
         public IActionResult ConfirmedDelete(Instructor ins)
         {
-            string nonce = Convert.ToBase64String(Encoding.UTF8.GetBytes(Guid.NewGuid().ToString()));
-            Response.Headers.Add("Content-Security-Policy", $"script-src 'self' 'nonce-{nonce}';");
-            ViewBag.Nonce = nonce; // Pass the nonce to your view
-
             _context.Instructors.Remove(ins);
             _context.SaveChanges();
             TempData["message"] = "Instructor Deleted Successfully!";
