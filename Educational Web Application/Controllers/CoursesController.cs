@@ -32,6 +32,7 @@ namespace EducationalWebApplication.Controllers
             {
                 if((crs.Name is not null and not "") && (crs.DepartmentID is not 0))
                 {
+                    TempData["message"] = "Course Saved Successfully!";
                     _context.Courses.Add(crs);
                     _context.SaveChanges();
                     return RedirectToAction("Index");
@@ -73,6 +74,7 @@ namespace EducationalWebApplication.Controllers
         {
             if ((crs.Name is not null and not "") && (crs.DepartmentID is not 0))
             {
+                TempData["message"] = "Course Updated successfully!";
                 _context.Courses.Update(crs);
                 _context.SaveChanges();
                 return RedirectToAction("Index");
@@ -99,6 +101,7 @@ namespace EducationalWebApplication.Controllers
         [ActionName("Delete")]
         public IActionResult ConfirmedDelete(Course crs)
         {
+            TempData["message"] = "Course Deleted Successfully!";
             _context.Courses.Remove(crs);
             _context.SaveChanges();
             return RedirectToAction("Index");
