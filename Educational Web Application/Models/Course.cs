@@ -18,6 +18,7 @@ namespace EducationalWebApplication.Models
         [Required]
         public int Credits { get; set; }
 
+        [Range(1, 1000,ErrorMessage = "Must Select Department")]
         [ForeignKey(nameof(Department))]
         public int DepartmentID { get; set; }
         public Department Department { get; set; }
