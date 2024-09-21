@@ -20,9 +20,14 @@ namespace EducationalWebApplication.Controllers
         }
 
         // GET: Departments
-        public IActionResult Index()
+        public IActionResult Index(string? search)
         {
-            return View(_context.Departments.ToList());
+            if (search == null || search == string.Empty)
+            {
+                return View(_context.Departments.ToList());
+            }
+            ViewBag.search = search;
+            return View(_context.Departments.Where(d => d.Name.Contains(search)).ToList());
         }
 
         // GET: Departments/Details/5

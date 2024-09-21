@@ -15,9 +15,19 @@ namespace EducationalWebApplication.Controllers
         {
             _context = context;
         }
-        public IActionResult Index()
+        public IActionResult Index(string? search)
         {
-            return View(_context.Instructors.Include(d => d.Department).Include(c => c.Course).ToList());
+            if(search == null || search == string.Empty)
+            {
+                return View(_context.Instructors.Include(d => d.Department).Include(c => c.Course).ToList());
+            }
+            ViewBag.search = search;
+            return View(
+                _context.Instructors
+                .Include(d => d.Department)
+                .Include(c => c.Course)
+                .Where(i => i.Name.Contains(search))
+                .ToList());
         }
         public IActionResult Details(int? id)
         {

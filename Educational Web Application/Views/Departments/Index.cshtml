@@ -1,4 +1,4 @@
-﻿@model IEnumerable<EducationalWebApplication.Models.Department>
+﻿@model IEnumerable<Department>
 
 @{
     ViewData["Title"] = "Departments";
@@ -17,9 +17,17 @@
 
 <h1>Departments List</h1>
 
-<p>
+<p class="mb-3">
     <a class="btn btn-outline-success" asp-action="Create">Create New</a>
 </p>
+<div class="mb-3">
+    <form asp-action="Index" class="flex justify-content-center">
+        <div class="nav justify-content-center">
+            <input class="form-control d-inline w-50 me-1" type="search" name="search" value="@ViewBag.search" />
+            <input class="btn btn-outline-primary" type="submit" value="Search" />
+        </div>
+    </form>
+</div>
 <table class="table">
     <thead>
         <tr>
@@ -50,3 +58,45 @@
 }
     </tbody>
 </table>
+@* Paging *@
+<div class="col-md-12">
+    <nav>
+        <ul class="pagination justify-content-center">
+            <li class="page-item">
+                <a class="page-link" href="#">
+                    <span>First</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#">
+                    <span>Previous</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#">
+                    <span>1</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#">
+                    <span>2</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#">
+                    <span>3</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#">
+                    <span>Next</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#">
+                    <span>Last</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
