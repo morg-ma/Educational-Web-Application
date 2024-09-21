@@ -14,14 +14,31 @@ namespace EducationalWebApplication.Controllers
         {
             _context = context;
         }
-        public IActionResult Index(string? search)
+        public IActionResult Index(string search = "", int pageNo = 1)
         {
-            if (search == null || search == string.Empty)
+            var courses = _context.Courses.Include(d => d.Department).ToList();
+
+            if (search != null && search != string.Empty)
             {
-                return View(_context.Courses.Include(d => d.Department).ToList());
+                courses = _context.Courses.Include(d => d.Department).Where(c => c.Name.StartsWith(search)).ToList();
+                ViewBag.search = search; 
             }
-            ViewBag.search = search;
-            return View(_context.Courses.Include(d => d.Department).Where(c => c.Name.Contains(search)).ToList());
+
+            // Pagination
+            int noOfRecordsPerPage = 4;
+            int noOfPages = Convert.ToInt32(
+                    Math.Ceiling(
+                        Convert.ToDouble(courses.Count) / Convert.ToDouble(noOfRecordsPerPage)
+                    )
+                );
+
+            int noOfRecordsToSkip = (pageNo - 1) * noOfRecordsPerPage;
+            ViewBag.pageNo = pageNo;
+            ViewBag.noOfPages = noOfPages;
+
+            courses = courses.Skip(noOfRecordsToSkip).Take(noOfRecordsPerPage).ToList();
+
+            return View(courses);
         }
 
         [HttpGet]

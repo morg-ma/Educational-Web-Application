@@ -15,19 +15,38 @@ namespace EducationalWebApplication.Controllers
         {
             _context = context;
         }
-        public IActionResult Index(string? search)
+        public IActionResult Index(string search = "", int pageNo = 1)
         {
-            if(search == null || search == string.Empty)
+            var instructors = _context.Instructors
+                                .Include(d => d.Department)
+                                .Include(c => c.Course)
+                                .ToList();
+
+            if (search != null && search != string.Empty)
             {
-                return View(_context.Instructors.Include(d => d.Department).Include(c => c.Course).ToList());
+                instructors = _context.Instructors
+                                .Include(d => d.Department)
+                                .Include(c => c.Course)
+                                .Where(i => i.Name.StartsWith(search))
+                                .ToList();
+                ViewBag.search = search;
             }
-            ViewBag.search = search;
-            return View(
-                _context.Instructors
-                .Include(d => d.Department)
-                .Include(c => c.Course)
-                .Where(i => i.Name.Contains(search))
-                .ToList());
+
+            // Pagination
+            int noOfRecordsPerPage = 4;
+            int noOfPages = Convert.ToInt32(
+                    Math.Ceiling(
+                        Convert.ToDouble(instructors.Count) / Convert.ToDouble(noOfRecordsPerPage)
+                    )
+                );
+
+            int noOfRecordsToSkip = (pageNo - 1) * noOfRecordsPerPage;
+            ViewBag.pageNo = pageNo;
+            ViewBag.noOfPages = noOfPages;
+
+            instructors = instructors.Skip(noOfRecordsToSkip).Take(noOfRecordsPerPage).ToList();
+
+            return View(instructors);
         }
         public IActionResult Details(int? id)
         {

@@ -20,14 +20,29 @@ namespace EducationalWebApplication.Controllers
         }
 
         // GET: Departments
-        public IActionResult Index(string? search)
+        public IActionResult Index(string search = "", int pageNo = 1)
         {
-            if (search == null || search == string.Empty)
+            var departs = _context.Departments.ToList();
+            if (search != null && search != string.Empty)
             {
-                return View(_context.Departments.ToList());
+                departs = _context.Departments.Where(d => d.Name.StartsWith(search)).ToList();
+                ViewBag.search = search;
             }
-            ViewBag.search = search;
-            return View(_context.Departments.Where(d => d.Name.Contains(search)).ToList());
+
+            // Pagination
+            int noOfRecordsPerPage = 4;
+            int noOfPages = Convert.ToInt32(
+                    Math.Ceiling(
+                        Convert.ToDouble(departs.Count) / Convert.ToDouble(noOfRecordsPerPage)
+                    )
+                );
+
+            int noOfRecordsToSkip = (pageNo - 1) * noOfRecordsPerPage;
+            ViewBag.pageNo = pageNo;
+            ViewBag.noOfPages = noOfPages;
+
+            departs = departs.Skip(noOfRecordsToSkip).Take(noOfRecordsPerPage).ToList();
+            return View(departs);
         }
 
         // GET: Departments/Details/5
