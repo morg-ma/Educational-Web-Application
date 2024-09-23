@@ -19,7 +19,8 @@
                 <span asp-validation-for="Password" class="text-danger "></span>
             </div>
             <div>
-                <input asp-for="RememberMe" />
+                <input asp-for="RememberMe" type="checkbox" />
+                <label asp-for="RememberMe">Remember me</label>
             </div>
             <span class="text-danger">@ViewBag.Error</span>
             <div class="form-group mt-3">
