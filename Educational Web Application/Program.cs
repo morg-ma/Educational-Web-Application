@@ -5,6 +5,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddSession(cofg =>
+{
+    cofg.IdleTimeout = TimeSpan.FromMinutes(20);
+});
+
 builder.Services.AddSqlServer<AppDBContext>(
     builder.Configuration
     .GetConnectionString("DefaultConnection"));
@@ -21,6 +26,8 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.UseSession();
 
 app.MapControllerRoute(
     name: "default",

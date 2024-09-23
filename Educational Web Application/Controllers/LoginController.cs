@@ -1,9 +1,19 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using EducationalWebApplication.Data;
+using EducationalWebApplication.ViewModels;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EducationalWebApplication.Controllers
 {
     public class LoginController : Controller
     {
+        private readonly AppDBContext _context;
+
+        public LoginController(AppDBContext context)
+        {
+            _context = context;
+        }
+
         [HttpGet]
         public IActionResult Index()
         {
@@ -15,24 +25,25 @@ namespace EducationalWebApplication.Controllers
 
         [HttpPost]
         [ActionName("Index")]
-        public IActionResult ConfirmLogin(string username, string password)
+        public IActionResult ConfirmLogin(LoginViewModel user)
         {
-            if (username == null || password == null)
+            if (user.Username == null || user.Password == null)
             {
                 ViewBag.Error = "Must enter your username and password";
                 return View();
             }
-            if ((username == "admin" && password == "admin") || (username == "Mahmoud" && password == "1234"))
-            {
-                TempData["username"] = username;
-                TempData["message"] = "Logedin successfully!";
-                return RedirectToAction("Index", "Home");
-            }
-            else
-            {
+            var searchUser = _context.Users.FirstOrDefault(u => u.Username == user.Username && u.Password == user.Password);
+            
+            if (searchUser == null) {
                 ViewBag.Error = "The username or password is invalid!";
                 return View("Index");
             }
+            
+            TempData["CurrentUsername"] = user.Username;
+            HttpContext.Session.SetString("User", user.Username);
+
+            TempData["Message"] = "Logged In Successfully!";
+            return RedirectToAction("Index", "Home");
         }
     }
 }

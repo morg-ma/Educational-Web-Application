@@ -70,18 +70,22 @@ namespace EducationalWebApplication.Controllers
                     .Include(d => d.Department)
                     .Include(c => c.Course)
                     .FirstOrDefault(i => i.Id == id);
+                
+                if (ins == null)
+                    return NotFound();
 
-                InstWithCoursAndDepartsViewModel vm = new InstWithCoursAndDepartsViewModel();
-
-                vm.Id = ins.Id;
-                vm.Name = ins.Name;
-                vm.Address = ins.Address;
-                vm.ImageURL = ins.ImageURL;
-                vm.Salary = ins.Salary;
-                vm.CourseID = ins.CourseID;
-                vm.DepartmentID = ins.DepartmentID;
-                vm.CourseList = _context.Courses.ToList();
-                vm.DepartmentList = _context.Departments.ToList();
+                var vm = new InstWithCoursAndDepartsViewModel()
+                {
+                    Id = ins.Id,
+                    Name = ins.Name,
+                    Address = ins.Address,
+                    ImageURL = ins.ImageURL,
+                    Salary = ins.Salary,
+                    CourseID = ins.CourseID,
+                    DepartmentID = ins.DepartmentID,
+                    CourseList = _context.Courses.ToList(),
+                    DepartmentList = _context.Departments.ToList()
+                };
 
                 return View(vm);
             }
@@ -104,8 +108,14 @@ namespace EducationalWebApplication.Controllers
                 ins.Salary = editedIns.Salary;
                 ins.CourseID = editedIns.CourseID;
                 ins.DepartmentID = editedIns.DepartmentID;
-                ins.Course = _context.Courses.Find(editedIns.CourseID);
-                ins.Department = _context.Departments.Find(editedIns.DepartmentID);
+                var crs = _context.Courses.Find(editedIns.CourseID);
+                if (crs != null)
+                    ins.Course = crs;
+
+                var dept = _context.Departments.Find(editedIns.DepartmentID);
+                if (dept != null)
+                    ins.Department = dept;
+
                 _context.SaveChanges();
                 TempData["message"] = "Instructor Updated successfully!";
                 return RedirectToAction(nameof(Index));
@@ -129,15 +139,18 @@ namespace EducationalWebApplication.Controllers
         {
             if (editedIns != null)
             {
-                var ins = new Instructor();
-                ins.Name = editedIns.Name;
-                ins.Address = editedIns.Address;
-                ins.ImageURL = editedIns.ImageURL;
-                ins.Salary = editedIns.Salary;
-                ins.CourseID = editedIns.CourseID;
-                ins.DepartmentID = editedIns.DepartmentID;
-                ins.Course = _context.Courses.Find(editedIns.CourseID);
-                ins.Department = _context.Departments.Find(editedIns.DepartmentID);
+                var ins = new Instructor()
+                {
+                    Name = editedIns.Name,
+                    Address = editedIns.Address,
+                    ImageURL = editedIns.ImageURL,
+                    Salary = editedIns.Salary,
+                    CourseID = editedIns.CourseID,
+                    DepartmentID = editedIns.DepartmentID,
+                    Course = _context.Courses.Find(editedIns.CourseID),
+                    Department = _context.Departments.Find(editedIns.DepartmentID)
+                };
+                
                 _context.Instructors.Add(ins);
                 _context.SaveChanges();
                 TempData["message"] = "Instructor Saved Successfully!";

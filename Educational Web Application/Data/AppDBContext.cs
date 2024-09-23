@@ -9,6 +9,7 @@ namespace EducationalWebApplication.Data
         public DbSet<Trainee> Trainees { get; set; }
         public DbSet<CourseResult> CourseResults { get; set; }
         public DbSet<Department> Departments { get; set; }
+        public DbSet<User> Users { get; set; }
 
         public AppDBContext(DbContextOptions options) : base(options) {}
 
@@ -145,6 +146,10 @@ namespace EducationalWebApplication.Data
                 new CourseResult { Id = 6, Score = 86, CourseID = 3, TraineeID = 6},    
                 new CourseResult { Id = 7, Score = 99, CourseID = 4, TraineeID = 7},    
                 new CourseResult { Id = 8, Score = 100, CourseID = 4, TraineeID = 8}
+            );
+            modelBuilder.Entity<User>().HasData(
+                new User { Id = 1, Username = "admin", Password = "admin" },
+                new User { Id = 2, Username = "Mahmoud", Password = "1234"}
             );
         }
     }

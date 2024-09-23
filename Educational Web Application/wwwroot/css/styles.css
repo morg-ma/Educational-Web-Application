@@ -4559,6 +4559,11 @@ textarea.form-control-lg {
   background-color: var(--bs-pagination-active-bg);
   border-color: var(--bs-pagination-active-border-color);
 }
+.pagination .page-item.active .page-link {
+    background-color: var(--bs-primary); /* Bootstrap primary color */
+    border-color: var(--bs-primary);
+    color: white; /* Text color for better readability */
+}
 .page-link.disabled, .disabled > .page-link {
   color: var(--bs-pagination-disabled-color);
   pointer-events: none;
