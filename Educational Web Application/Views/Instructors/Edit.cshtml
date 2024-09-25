@@ -23,6 +23,7 @@
             <div class="form-group">
                 <label for="photo" class="control-label">Image</label>
                 <input id="imageUpload" type="file" name="photo" class="form-control" accept="Image/*" />
+                <input type="hidden" name="currentImage" value="@ViewBag.CurrentImage" />
                 <span id="errorMessage" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -61,13 +62,6 @@
 
         // Reset error message
         errorMessage.textContent = '';
-
-        // Check if file is selected
-        if (!file) {
-            errorMessage.textContent = 'Please select an image.';
-            event.preventDefault();  // Prevent form submission
-            return;
-        }
 
         // Check file type (only allow JPG, PNG, JPEG)
         let allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];

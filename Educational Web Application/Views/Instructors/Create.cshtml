@@ -64,13 +64,6 @@
         // Reset error message
         errorMessage.textContent = '';
 
-        // Check if file is selected
-        if (!file) {
-            errorMessage.textContent = 'Please select an image.';
-            event.preventDefault();  // Prevent form submission
-            return;
-        }
-
         // Check file type (only allow JPG, PNG, JPEG)
         let allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
         if (!allowedTypes.includes(file.type)) {

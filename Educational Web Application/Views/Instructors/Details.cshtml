@@ -4,50 +4,23 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h1>Instructor Details</h1>
 
-<div>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ImageURL)
-        </dt>
-        <dd class = "col-sm-10">
-            <img src="~/assets/img/Instructors/@Model.ImageURL" width="50"/>
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Salary)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Salary)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Address)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Address)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Department)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Department.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Course)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Course.Name)
-        </dd>
-    </dl>
+<div class="container mt-5 mb-2">
+    <div class="card" style="width: 18rem;">
+        <img src="~/assets/img/Instructors/@Model.ImageURL" class="card-img-top" alt="Instructor Image" id="instructorImage">
+        <div class="card-body">
+            <h5 class="card-title" id="instructorName">@Model.Name</h5>
+            <p class="card-text">
+                <strong>Salary:</strong> <span id="instructorSalary">@Model.Salary</span><br>
+                <strong>Address:</strong> <span id="instructorAddress">@Model.Address</span><br>
+                <strong>Department:</strong> <span id="instructorDepartment">@Model.Department.Name</span><br>
+                <strong>Course:</strong> <span id="instructorCourse">@Model.Course.Name</span>
+            </p>
+        </div>
+    </div>
 </div>
 <div>
-    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> | 
+    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a class="btn btn-outline-secondary" asp-action="Index">Back to List</a>
 </div>

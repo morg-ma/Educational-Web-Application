@@ -4,51 +4,25 @@
     ViewData["Title"] = "Delete";
 }
 
-<h1>Delete</h1>
+<h2>Remove Instructor</h2>
 
-<h3>Are you sure you want to delete this?</h3>
+<h4>Are you sure you want to remove this Instructor?</h4>
+
+<div class="container mt-2 mb-2">
+    <div class="card" style="width: 18rem;">
+        <img src="~/assets/img/Instructors/@Model.ImageURL" class="card-img-top" alt="Instructor Image" id="instructorImage">
+        <div class="card-body">
+            <h5 class="card-title" id="instructorName">@Model.Name</h5>
+            <p class="card-text">
+                <strong>Salary:</strong> <span id="instructorSalary">@Model.Salary</span><br>
+                <strong>Address:</strong> <span id="instructorAddress">@Model.Address</span><br>
+                <strong>Department:</strong> <span id="instructorDepartment">@Model.Department.Name</span><br>
+                <strong>Course:</strong> <span id="instructorCourse">@Model.Course.Name</span>
+            </p>
+        </div>
+    </div>
+</div>
 <div>
-    <h4>Instructor</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ImageURL)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ImageURL)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Salary)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Salary)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Address)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Address)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Department)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Department.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Course)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Course.Name)
-        </dd>
-    </dl>
-    
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |

@@ -80,13 +80,15 @@ namespace EducationalWebApplication.Controllers
                 ViewBag.CourseList = new SelectList(_context.Courses.ToList(), "Id", "Name");
                 ViewBag.DepartmentList = new SelectList(_context.Departments.ToList(), "Id", "Name");
 
+                ViewBag.CurrentImage = ins.ImageURL;
+
                 return View(ins);
             }
             return NotFound();
         }
 
         [HttpPost]
-        public IActionResult Edit(Instructor editedIns, IFormFile photo)
+        public IActionResult Edit(Instructor editedIns, IFormFile photo, string currentImage)
         {
             if (editedIns.Name.IsNullOrEmpty() ||
                 editedIns.Salary == 0 ||
@@ -98,7 +100,15 @@ namespace EducationalWebApplication.Controllers
                 ViewBag.DepartmentList = new SelectList(_context.Departments.ToList(), "Id", "Name");
                 return View(editedIns);
             }
-            editedIns.ImageURL = UploadImage(photo, editedIns.Name);
+
+            if (photo != null)
+            {
+                editedIns.ImageURL = UploadImage(photo, editedIns.Name);
+            }
+            else
+            {
+                editedIns.ImageURL = currentImage;
+            }
 
             _context.Instructors.Update(editedIns);
             _context.SaveChanges();
