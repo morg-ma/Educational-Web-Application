@@ -4,6 +4,8 @@ using EducationalWebApplication.Data;
 using EducationalWebApplication.Models;
 using EducationalWebApplication.ViewModels;
 using System.Text;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.IdentityModel.Tokens;
 
 namespace EducationalWebApplication.Controllers
 {
@@ -21,6 +23,7 @@ namespace EducationalWebApplication.Controllers
                                 .Include(d => d.Department)
                                 .Include(c => c.Course)
                                 .ToList();
+
 
             if (search != null && search != string.Empty)
             {
@@ -70,95 +73,69 @@ namespace EducationalWebApplication.Controllers
                     .Include(d => d.Department)
                     .Include(c => c.Course)
                     .FirstOrDefault(i => i.Id == id);
-                
+
                 if (ins == null)
                     return NotFound();
 
-                var vm = new InstWithCoursAndDepartsViewModel()
-                {
-                    Id = ins.Id,
-                    Name = ins.Name,
-                    Address = ins.Address,
-                    ImageURL = ins.ImageURL,
-                    Salary = ins.Salary,
-                    CourseID = ins.CourseID,
-                    DepartmentID = ins.DepartmentID,
-                    CourseList = _context.Courses.ToList(),
-                    DepartmentList = _context.Departments.ToList()
-                };
+                ViewBag.CourseList = new SelectList(_context.Courses.ToList(), "Id", "Name");
+                ViewBag.DepartmentList = new SelectList(_context.Departments.ToList(), "Id", "Name");
 
-                return View(vm);
+                return View(ins);
             }
             return NotFound();
         }
 
         [HttpPost]
-        public IActionResult Edit(InstWithCoursAndDepartsViewModel editedIns)
+        public IActionResult Edit(Instructor editedIns, IFormFile photo)
         {
-            if (editedIns != null)
+            if (editedIns.Name.IsNullOrEmpty() ||
+                editedIns.Salary == 0 ||
+                editedIns.Address.IsNullOrEmpty() ||
+                editedIns.CourseID == 0 ||
+                editedIns.DepartmentID == 0)
             {
-                var ins = _context.Instructors
-                .Include(d => d.Department)
-                .Include(c => c.Course)
-                .FirstOrDefault(i => i.Id == editedIns.Id);
-
-                ins.Name = editedIns.Name;
-                ins.Address = editedIns.Address;
-                ins.ImageURL = editedIns.ImageURL;
-                ins.Salary = editedIns.Salary;
-                ins.CourseID = editedIns.CourseID;
-                ins.DepartmentID = editedIns.DepartmentID;
-                var crs = _context.Courses.Find(editedIns.CourseID);
-                if (crs != null)
-                    ins.Course = crs;
-
-                var dept = _context.Departments.Find(editedIns.DepartmentID);
-                if (dept != null)
-                    ins.Department = dept;
-
-                _context.SaveChanges();
-                TempData["message"] = "Instructor Updated successfully!";
-                return RedirectToAction(nameof(Index));
+                ViewBag.CourseList = new SelectList(_context.Courses.ToList(), "Id", "Name");
+                ViewBag.DepartmentList = new SelectList(_context.Departments.ToList(), "Id", "Name");
+                return View(editedIns);
             }
-            editedIns.CourseList = _context.Courses.ToList();
-            editedIns.DepartmentList = _context.Departments.ToList();
-            return View(editedIns);
+            editedIns.ImageURL = UploadImage(photo, editedIns.Name);
+
+            _context.Instructors.Update(editedIns);
+            _context.SaveChanges();
+            TempData["message"] = "Instructor Updated successfully!";
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
         public IActionResult Create()
         {
-            InstWithCoursAndDepartsViewModel vm = new InstWithCoursAndDepartsViewModel();
-            vm.CourseList = _context.Courses.ToList();
-            vm.DepartmentList = _context.Departments.ToList();
-            return View(vm);
+            ViewBag.CourseList = new SelectList(_context.Courses.ToList(), "Id", "Name");
+            ViewBag.DepartmentList = new SelectList(_context.Departments.ToList(), "Id", "Name");
+
+            return View();
         }
 
         [HttpPost]
-        public IActionResult Create(InstWithCoursAndDepartsViewModel editedIns)
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(Instructor newIns, IFormFile photo)
         {
-            if (editedIns != null)
+            if (newIns.Name.IsNullOrEmpty() || 
+                newIns.Salary == 0 ||
+                newIns.Address.IsNullOrEmpty() ||
+                newIns.CourseID == 0 ||
+                newIns.DepartmentID == 0)
             {
-                var ins = new Instructor()
-                {
-                    Name = editedIns.Name,
-                    Address = editedIns.Address,
-                    ImageURL = editedIns.ImageURL,
-                    Salary = editedIns.Salary,
-                    CourseID = editedIns.CourseID,
-                    DepartmentID = editedIns.DepartmentID,
-                    Course = _context.Courses.Find(editedIns.CourseID),
-                    Department = _context.Departments.Find(editedIns.DepartmentID)
-                };
-                
-                _context.Instructors.Add(ins);
-                _context.SaveChanges();
-                TempData["message"] = "Instructor Saved Successfully!";
-                return RedirectToAction(nameof(Index));
+                ViewBag.CourseList = new SelectList(_context.Courses.ToList(), "Id", "Name");
+                ViewBag.DepartmentList = new SelectList(_context.Departments.ToList(), "Id", "Name");
+                return View(newIns);
             }
-            editedIns.CourseList = _context.Courses.ToList();
-            editedIns.DepartmentList = _context.Departments.ToList();
-            return View(editedIns);
+
+            newIns.ImageURL = UploadImage(photo, newIns.Name);
+                
+            _context.Instructors.Add(newIns);
+            _context.SaveChanges();
+            TempData["message"] = "Instructor Saved Successfully!";
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
@@ -182,6 +159,26 @@ namespace EducationalWebApplication.Controllers
             _context.SaveChanges();
             TempData["message"] = "Instructor Deleted Successfully!";
             return RedirectToAction(nameof(Index));
+        }
+
+        [NonAction]
+        private string UploadImage(IFormFile photo, string insName)
+        {
+            string insPhoto = "default.png";
+            if (photo != null && photo.Length > 0)
+            {
+                string extension = Path.GetExtension(photo.FileName);
+                string photoName = insName + "_" + DateTime.Now.ToString("yyyyMMddmmss") + extension;
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/assets/img/Instructors", photoName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    photo.CopyTo(stream);
+                }
+
+                insPhoto = photoName;
+            }
+            return insPhoto;
         }
     }
 }

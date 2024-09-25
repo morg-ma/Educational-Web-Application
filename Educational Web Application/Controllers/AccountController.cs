@@ -6,17 +6,17 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EducationalWebApplication.Controllers
 {
-    public class LoginController : Controller
+    public class AccountController : Controller
     {
         private readonly AppDBContext _context;
 
-        public LoginController(AppDBContext context)
+        public AccountController(AppDBContext context)
         {
             _context = context;
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Login()
         {
             // Check if the user is already logged in by session
             if (HttpContext.Session.GetString("User") != null)
@@ -39,7 +39,6 @@ namespace EducationalWebApplication.Controllers
         }
 
         [HttpPost]
-        [ActionName("Index")]
         public IActionResult Login(LoginViewModel user)
         {
             // Validate username and password input
@@ -55,7 +54,7 @@ namespace EducationalWebApplication.Controllers
             if (searchUser == null)
             {
                 ViewBag.Error = "The username or password is invalid!";
-                return View("Index");
+                return View();
             }
 
             // Handle "Remember Me" functionality
@@ -97,7 +96,7 @@ namespace EducationalWebApplication.Controllers
             }
 
             TempData["Message"] = "Logged Out Successfully!";
-            return RedirectToAction("Index"); // Redirect to the login page
+            return RedirectToAction(nameof(Login)); // Redirect to the login page
         }
 
     }

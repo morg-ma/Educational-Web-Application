@@ -70,4 +70,8 @@
     <None Include="wwwroot\assets\vendor\waypoints\noframework.waypoints.js" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\assets\img\Instructors\" />
+  </ItemGroup>
+
 </Project>

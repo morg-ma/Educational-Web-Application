@@ -1,9 +1,9 @@
-﻿@model EducationalWebApplication.ViewModels.InstWithCoursAndDepartsViewModel
+﻿@model Instructor
 
 @{
     ViewData["Title"] = "Create";
-    SelectList DeptList = new SelectList(Model.DepartmentList, "Id", "Name");
-    SelectList CrsList = new SelectList(Model.CourseList, "Id", "Name");
+    SelectList DeptList = ViewBag.DepartmentList;
+    SelectList CrsList = ViewBag.CourseList;
 }
 
 <h1>Create</h1>
@@ -11,7 +11,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" id="FormCreate" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
@@ -19,9 +19,9 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ImageURL" class="control-label"></label>
-                <input asp-for="ImageURL" class="form-control" />
-                <span asp-validation-for="ImageURL" class="text-danger"></span>
+                <label class="control-label">Image</label>
+                <input id="imageUpload" name="photo" type="file" class="form-control" accept="image/*" />
+                <span id="errorMessage" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Salary" class="control-label"></label>
@@ -55,7 +55,41 @@
         </form>
     </div>
 </div>
+<script>
+    document.getElementById('FormCreate').addEventListener('submit', function (event) {
+        let imageInput = document.getElementById('imageUpload');
+        let errorMessage = document.getElementById('errorMessage');
+        let file = imageInput.files[0];
 
+        // Reset error message
+        errorMessage.textContent = '';
+
+        // Check if file is selected
+        if (!file) {
+            errorMessage.textContent = 'Please select an image.';
+            event.preventDefault();  // Prevent form submission
+            return;
+        }
+
+        // Check file type (only allow JPG, PNG, JPEG)
+        let allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        if (!allowedTypes.includes(file.type)) {
+            errorMessage.textContent = 'Only .jpg, .jpeg, and .png files are allowed.';
+            event.preventDefault();
+            return;
+        }
+
+        // Check file size (limit to 2MB)
+        let maxSize = 2 * 1024 * 1024;  // 2MB in bytes
+        if (file.size > maxSize) {
+            errorMessage.textContent = 'Image size must be less than 2MB.';
+            event.preventDefault();
+            return;
+        }
+
+        // If everything is fine, the form will submit
+    });
+</script>
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
