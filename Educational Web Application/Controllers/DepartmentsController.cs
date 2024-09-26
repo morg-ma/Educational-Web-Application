@@ -80,7 +80,7 @@ namespace EducationalWebApplication.Controllers
             {
                 _context.Add(department);
                 _context.SaveChanges();
-                TempData["message"] = "Department Saved Successfully!";
+                TempData["message"] = $"Department {department.Name} Saved Successfully!";
                 return RedirectToAction(nameof(Index));
             }
             return View(department);
@@ -120,7 +120,7 @@ namespace EducationalWebApplication.Controllers
                 {
                     _context.Update(department);
                     _context.SaveChanges();
-                    TempData["message"] = "Department Updated Successfully!";
+                    TempData["message"] = $"Department {department.Name} Updated Successfully!";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -162,13 +162,13 @@ namespace EducationalWebApplication.Controllers
         public IActionResult DeleteConfirmed(int id)
         {
             var department = _context.Departments.Find(id);
-            if (department != null)
+            if (department == null)
             {
-                _context.Departments.Remove(department);
+                return NotFound();    
             }
-
+            _context.Departments.Remove(department);
             _context.SaveChanges();
-            TempData["message"] = "Department Deleted Successfully!";
+            TempData["message"] = $"Department {department.Name} Deleted Successfully!";
             return RedirectToAction(nameof(Index));
         }
 

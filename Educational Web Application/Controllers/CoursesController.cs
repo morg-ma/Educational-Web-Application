@@ -54,7 +54,7 @@ namespace EducationalWebApplication.Controllers
             {
                 if((crs.Name is not null and not "") && (crs.DepartmentID is not 0))
                 {
-                    TempData["message"] = "Course Saved Successfully!";
+                    TempData["message"] = $"Course {crs.Name} Saved Successfully!";
                     _context.Courses.Add(crs);
                     _context.SaveChanges();
                     return RedirectToAction("Index");
@@ -96,7 +96,7 @@ namespace EducationalWebApplication.Controllers
         {
             if ((crs.Name is not null and not "") && (crs.DepartmentID is not 0))
             {
-                TempData["message"] = "Course Updated successfully!";
+                TempData["message"] = $"Course {crs.Name} Updated successfully!";
                 _context.Courses.Update(crs);
                 _context.SaveChanges();
                 return RedirectToAction("Index");
@@ -105,25 +105,11 @@ namespace EducationalWebApplication.Controllers
             return View(crs);
         }
 
-        [HttpGet]
-        public IActionResult Delete(int? id)
-        {
-            if (id != null)
-            {
-                var crs = _context.Courses.Include(d => d.Department).FirstOrDefault(c => c.Id == id);
-                if (crs != null)
-                {
-                    return View(crs);
-                }
-            }
-            return NotFound();
-        }
-
         [HttpPost]
         [ActionName("Delete")]
         public IActionResult ConfirmedDelete(Course crs)
         {
-            TempData["message"] = "Course Deleted Successfully!";
+            TempData["message"] = $"Course {crs.Name} Deleted Successfully!";
             _context.Courses.Remove(crs);
             _context.SaveChanges();
             return RedirectToAction("Index");

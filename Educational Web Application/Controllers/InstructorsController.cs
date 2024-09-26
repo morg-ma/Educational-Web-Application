@@ -112,7 +112,7 @@ namespace EducationalWebApplication.Controllers
 
             _context.Instructors.Update(editedIns);
             _context.SaveChanges();
-            TempData["message"] = "Instructor Updated successfully!";
+            TempData["message"] = $"Instructor {editedIns.Name} Updated successfully!";
             return RedirectToAction(nameof(Index));
         }
 
@@ -144,30 +144,21 @@ namespace EducationalWebApplication.Controllers
                 
             _context.Instructors.Add(newIns);
             _context.SaveChanges();
-            TempData["message"] = "Instructor Saved Successfully!";
+            TempData["message"] = $"Instructor {newIns.Name} Saved Successfully!";
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpGet]
-        public IActionResult Delete(int? id)
-        {
-            if (id != null && id != 0)
-            {
-                var ins = _context.Instructors
-                    .Include(d => d.Department)
-                    .Include(c => c.Course)
-                    .FirstOrDefault(i => i.Id == id);
-                return View(ins);
-            }
-            return NotFound();
-        }
         [HttpPost]
-        [ActionName("Delete")]
-        public IActionResult ConfirmedDelete(Instructor ins)
+        [ValidateAntiForgeryToken]
+        public IActionResult Delete(int id)
         {
+            var ins = _context.Instructors.Find(id);
+            if (ins == null)
+                return NotFound();
+
             _context.Instructors.Remove(ins);
             _context.SaveChanges();
-            TempData["message"] = "Instructor Deleted Successfully!";
+            TempData["message"] = $"Instructor {ins.Name} Deleted Successfully!";
             return RedirectToAction(nameof(Index));
         }
 
