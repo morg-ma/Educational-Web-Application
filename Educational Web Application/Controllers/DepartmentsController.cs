@@ -20,14 +20,19 @@ namespace EducationalWebApplication.Controllers
         }
 
         // GET: Departments
-        public IActionResult Index(string search = "", int pageNo = 1)
+        public IActionResult Index(string sortOrder, string search = "", int pageNo = 1)
         {
             var departs = _context.Departments.ToList();
+            
+            // Searching
             if (search != null && search != string.Empty)
             {
                 departs = _context.Departments.Where(d => d.Name.StartsWith(search)).ToList();
                 ViewBag.search = search;
             }
+
+            departs = SortColumn(departs, sortOrder);
+            ViewBag.sortOrder = sortOrder;
 
             // Pagination
             int noOfRecordsPerPage = 4;
@@ -175,6 +180,33 @@ namespace EducationalWebApplication.Controllers
         private bool DepartmentExists(int id)
         {
             return _context.Departments.Any(e => e.Id == id);
+        }
+
+        [NonAction]
+        private List<Department> SortColumn(IEnumerable<Department> departments, string sortOrder)
+        {
+            // Sort order parameters for each field
+            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewBag.ManagerSortParm = sortOrder == "ManagerName" ? "manager_desc" : "ManagerName";
+
+            // Sorting logic based on sortOrder parameter
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    departments = departments.OrderByDescending(e => e.Name);
+                    break;
+                case "ManagerName":
+                    departments = departments.OrderBy(e => e.ManagerName);
+                    break;
+                case "manager_desc":
+                    departments = departments.OrderByDescending(e => e.ManagerName);
+                    break;
+                default:
+                    departments = departments.OrderBy(e => e.Name); // Default sort by Name
+                    break;
+            }
+
+            return departments.ToList();
         }
     }
 }

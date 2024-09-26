@@ -31,22 +31,22 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                <a class="text-decoration-none" asp-action="Index" asp-route-sortOrder="@ViewBag.NameSortParm" asp-route-search="@ViewBag.search">Name</a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Salary)
+                <a class="text-decoration-none" asp-action="Index" asp-route-sortOrder="@ViewBag.SalarySortParm" asp-route-search="@ViewBag.search">Salary</a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Address)
+                <a class="text-decoration-none" asp-action="Index" asp-route-sortOrder="@ViewBag.AddressSortParm" asp-route-search="@ViewBag.search">Address</a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ImageURL)
+                <label class="text-primary">Image</label>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Department)
+                <a class="text-decoration-none" asp-action="Index" asp-route-sortOrder="@ViewBag.DepartmentSortParm" asp-route-search="@ViewBag.search">Department</a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Course)
+                <a class="text-decoration-none" asp-action="Index" asp-route-sortOrder="@ViewBag.CourseSortParm" asp-route-search="@ViewBag.search">Course</a>
             </th>
             <th></th>
         </tr>
@@ -98,7 +98,7 @@
     <nav>
         <ul class="pagination justify-content-center">
             <li class="page-item">
-                <a class="page-link" asp-action="Index" asp-controller="Instructors" asp-route-pageNo=@prevPageNo asp-route-search=@ViewBag.search>
+                <a class="page-link" asp-action="Index" asp-controller="Instructors" asp-route-pageNo=@prevPageNo asp-route-search=@ViewBag.search asp-route-sortOrder="@ViewBag.sortOrder">
                     <span>Previous</span>
                 </a>
             </li>
@@ -115,7 +115,7 @@
                 else
                 {
                     <li class="page-item">
-                        <a class="page-link" asp-action="Index" asp-controller="Instructors" asp-route-pageNo=@i asp-route-search=@ViewBag.search>
+                        <a class="page-link" asp-action="Index" asp-controller="Instructors" asp-route-pageNo=@i asp-route-search=@ViewBag.search asp-route-sortOrder="@ViewBag.sortOrder">
                             <span>@i</span>
                         </a>
                     </li>
@@ -123,7 +123,7 @@
 
             }
             <li class="page-item">
-                <a class="page-link" asp-action="Index" asp-controller="Instructors" asp-route-pageNo=@nextPageNo asp-route-search=@ViewBag.search>
+                <a class="page-link" asp-action="Index" asp-controller="Instructors" asp-route-pageNo=@nextPageNo asp-route-search=@ViewBag.search asp-route-sortOrder="@ViewBag.sortOrder">
                     <span>Next</span>
                 </a>
             </li>

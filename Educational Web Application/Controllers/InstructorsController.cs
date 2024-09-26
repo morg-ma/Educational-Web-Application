@@ -6,6 +6,7 @@ using EducationalWebApplication.ViewModels;
 using System.Text;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Data.SqlClient;
 
 namespace EducationalWebApplication.Controllers
 {
@@ -17,14 +18,14 @@ namespace EducationalWebApplication.Controllers
         {
             _context = context;
         }
-        public IActionResult Index(string search = "", int pageNo = 1)
+        public IActionResult Index(string sortOrder, string search = "", int pageNo = 1)
         {
             var instructors = _context.Instructors
                                 .Include(d => d.Department)
                                 .Include(c => c.Course)
                                 .ToList();
 
-
+            // Searching
             if (search != null && search != string.Empty)
             {
                 instructors = _context.Instructors
@@ -34,6 +35,10 @@ namespace EducationalWebApplication.Controllers
                                 .ToList();
                 ViewBag.search = search;
             }
+
+            // Sorting
+            instructors = SortColumn(instructors, sortOrder);
+            ViewBag.sortOrder = sortOrder;
 
             // Pagination
             int noOfRecordsPerPage = 4;
@@ -180,6 +185,54 @@ namespace EducationalWebApplication.Controllers
                 insPhoto = photoName;
             }
             return insPhoto;
+        }
+
+        [NonAction]
+        private List<Instructor> SortColumn(IEnumerable<Instructor> instructors, string sortOrder)
+        {
+            // Sort order parameters for each field
+            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewBag.SalarySortParm = sortOrder == "Salary" ? "salary_desc" : "Salary";
+            ViewBag.AddressSortParm = sortOrder == "Address" ? "address_desc" : "Address";
+            ViewBag.DepartmentSortParm = sortOrder == "DepartmentID" ? "dept_desc" : "DepartmentID";
+            ViewBag.CourseSortParm = sortOrder == "CourseID" ? "course_desc" : "CourseID";
+
+            // Sorting logic based on sortOrder parameter
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    instructors = instructors.OrderByDescending(e => e.Name);
+                    break;
+                case "Salary":
+                    instructors = instructors.OrderBy(e => e.Salary);
+                    break;
+                case "salary_desc":
+                    instructors = instructors.OrderByDescending(e => e.Salary);
+                    break;
+                case "Address":
+                    instructors = instructors.OrderBy(e => e.Address);
+                    break;
+                case "address_desc":
+                    instructors = instructors.OrderByDescending(e => e.Address);
+                    break;
+                case "DepartmentID":
+                    instructors = instructors.OrderBy(i => i.Department.Name);
+                    break;
+                case "dept_desc":
+                    instructors = instructors.OrderByDescending(i => i.Department.Name);
+                    break;
+                case "CourseID":
+                    instructors = instructors.OrderBy(e => e.Course.Name);
+                    break;
+                case "course_desc":
+                    instructors = instructors.OrderByDescending(e => e.Course.Name);
+                    break;
+                default:
+                    instructors = instructors.OrderBy(e => e.Name); // Default sort by Name
+                    break;
+            }
+
+            return instructors.ToList();
         }
     }
 }
