@@ -7,6 +7,7 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Hosting;
 
 namespace EducationalWebApplication.Controllers
 {
@@ -160,6 +161,17 @@ namespace EducationalWebApplication.Controllers
             var ins = _context.Instructors.Find(id);
             if (ins == null)
                 return NotFound();
+
+            // Delete the photo from the server if it exists
+            if (!string.IsNullOrEmpty(ins.ImageURL) && ins.ImageURL != "default.png")
+            {
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/assets/img/Instructors", ins.ImageURL);
+
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                }
+            }
 
             _context.Instructors.Remove(ins);
             _context.SaveChanges();
