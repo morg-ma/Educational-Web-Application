@@ -1,4 +1,4 @@
-﻿@model IEnumerable<EducationalWebApplication.Models.Instructor>
+﻿@model InstructorsViewModel
 
 @{
     ViewData["Title"] = "Instructors";
@@ -21,7 +21,7 @@
 <div class="mb-3">
     <form asp-action="Index" class="flex justify-content-center">
         <div class="nav justify-content-center">
-            <input class="form-control d-inline w-50 me-1" type="search" name="search" value="@ViewBag.search" />
+            <input class="form-control d-inline w-50 me-1" type="search" name="search" value="@Model.Search" />
             <input class="btn btn-outline-primary" type="submit" value="Search" />
         </div>
     </form>
@@ -31,28 +31,28 @@
     <thead>
         <tr>
             <th>
-                <a class="text-decoration-none" asp-action="Index" asp-route-sortOrder="@ViewBag.NameSortParm" asp-route-search="@ViewBag.search">Name</a>
+                <a class="text-decoration-none" asp-action="Index" asp-route-sortOrder="@ViewBag.NameSortParm" asp-route-search="@Model.Search">Name</a>
             </th>
             <th>
-                <a class="text-decoration-none" asp-action="Index" asp-route-sortOrder="@ViewBag.SalarySortParm" asp-route-search="@ViewBag.search">Salary</a>
+                <a class="text-decoration-none" asp-action="Index" asp-route-sortOrder="@ViewBag.SalarySortParm" asp-route-search="@Model.Search">Salary</a>
             </th>
             <th>
-                <a class="text-decoration-none" asp-action="Index" asp-route-sortOrder="@ViewBag.AddressSortParm" asp-route-search="@ViewBag.search">Address</a>
+                <a class="text-decoration-none" asp-action="Index" asp-route-sortOrder="@ViewBag.AddressSortParm" asp-route-search="@Model.Search">Address</a>
             </th>
             <th>
                 <label class="text-primary">Image</label>
             </th>
             <th>
-                <a class="text-decoration-none" asp-action="Index" asp-route-sortOrder="@ViewBag.DepartmentSortParm" asp-route-search="@ViewBag.search">Department</a>
+                <a class="text-decoration-none" asp-action="Index" asp-route-sortOrder="@ViewBag.DepartmentSortParm" asp-route-search="@Model.Search">Department</a>
             </th>
             <th>
-                <a class="text-decoration-none" asp-action="Index" asp-route-sortOrder="@ViewBag.CourseSortParm" asp-route-search="@ViewBag.search">Course</a>
+                <a class="text-decoration-none" asp-action="Index" asp-route-sortOrder="@ViewBag.CourseSortParm" asp-route-search="@Model.Search">Course</a>
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model.Page.Items) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
@@ -84,27 +84,36 @@
 @* Paging *@
 <div class="col-md-12">
     @{
-        int prevPageNo = ViewBag.pageNo - 1;
-        if (prevPageNo <= 0)
+        int prevPageNo = Model.Page.PageNo - 1;
+        if (!Model.Page.HasPrevPage)
         {
             prevPageNo = 1;
         }
-        int nextPageNo = ViewBag.pageNo + 1;
-        if (nextPageNo > ViewBag.noOfPages)
+        int nextPageNo = Model.Page.PageNo + 1;
+        if (!Model.Page.HasNextPage)
         {
-            nextPageNo = ViewBag.noOfPages;
+            nextPageNo = Model.Page.TotalPages;
         }
     }
     <nav>
         <ul class="pagination justify-content-center">
             <li class="page-item">
-                <a class="page-link" asp-action="Index" asp-controller="Instructors" asp-route-pageNo=@prevPageNo asp-route-search=@ViewBag.search asp-route-sortOrder="@ViewBag.sortOrder">
-                    <span>Previous</span>
-                </a>
+                @if (Model.Page.HasPrevPage)
+                {
+                    <a class="page-link" asp-action="Index" asp-controller="Instructors" asp-route-pageNo=@prevPageNo asp-route-search=@Model.Search asp-route-sortOrder="@Model.SortOrder">
+                        <span>Previous</span>
+                    </a>
+                }
+                else
+                {
+                    <label class="page-link" >
+                        <span>Previous</span>
+                    </label>
+                }
             </li>
-            @for (var i = 1; i <= ViewBag.noOfPages; i++)
+            @for (var i = 1; i <= Model.Page.TotalPages; i++)
             {
-                if (i == ViewBag.pageNo)
+                if (i == Model.Page.PageNo)
                 {
                     <li class="page-item active">
                         <a class="page-link">
@@ -115,7 +124,7 @@
                 else
                 {
                     <li class="page-item">
-                        <a class="page-link" asp-action="Index" asp-controller="Instructors" asp-route-pageNo=@i asp-route-search=@ViewBag.search asp-route-sortOrder="@ViewBag.sortOrder">
+                        <a class="page-link" asp-action="Index" asp-controller="Instructors" asp-route-pageNo=@i asp-route-search=@Model.Search asp-route-sortOrder="@Model.SortOrder">
                             <span>@i</span>
                         </a>
                     </li>
@@ -123,9 +132,18 @@
 
             }
             <li class="page-item">
-                <a class="page-link" asp-action="Index" asp-controller="Instructors" asp-route-pageNo=@nextPageNo asp-route-search=@ViewBag.search asp-route-sortOrder="@ViewBag.sortOrder">
-                    <span>Next</span>
-                </a>
+                @if (Model.Page.HasNextPage)
+                {
+                    <a class="page-link" asp-action="Index" asp-controller="Instructors" asp-route-pageNo=@nextPageNo asp-route-search=@Model.Search asp-route-sortOrder="@Model.SortOrder">
+                        <span>Next</span>
+                    </a>
+                }
+                else
+                {
+                    <label class="page-link" >
+                        <span>Next</span>
+                    </label>
+                }
             </li>
         </ul>
     </nav>

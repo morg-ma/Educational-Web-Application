@@ -1,5 +1,6 @@
 ﻿using EducationalWebApplication.Data;
 using EducationalWebApplication.Models;
+using EducationalWebApplication.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -14,36 +15,13 @@ namespace EducationalWebApplication.Controllers
         {
             _context = context;
         }
-        public IActionResult Index(string sortOrder, string search = "", int pageNo = 1)
+        public async Task<IActionResult> Index(string sortOrder, string search = "", int pageNo = 1)
         {
-            var courses = _context.Courses.Include(d => d.Department).ToList();
+            var courses = _context.Courses.Include(d => d.Department).AsQueryable();
 
-            // Searching
-            if (search != null && search != string.Empty)
-            {
-                courses = _context.Courses.Include(d => d.Department).Where(c => c.Name.StartsWith(search)).ToList();
-                ViewBag.search = search; 
-            }
-
-            // Sorting
-            courses = SortColumn(courses, sortOrder);
-            ViewBag.sortOrder = sortOrder;
-
-            // Pagination
-            int noOfRecordsPerPage = 4;
-            int noOfPages = Convert.ToInt32(
-                    Math.Ceiling(
-                        Convert.ToDouble(courses.Count) / Convert.ToDouble(noOfRecordsPerPage)
-                    )
-                );
-
-            int noOfRecordsToSkip = (pageNo - 1) * noOfRecordsPerPage;
-            ViewBag.pageNo = pageNo;
-            ViewBag.noOfPages = noOfPages;
-
-            courses = courses.Skip(noOfRecordsToSkip).Take(noOfRecordsPerPage).ToList();
-
-            return View(courses);
+            var crsVM = await CoursesVM(courses, sortOrder, search, pageNo);
+            
+            return View(crsVM);
         }
 
         [HttpGet]
@@ -121,7 +99,7 @@ namespace EducationalWebApplication.Controllers
         }
 
         [NonAction]
-        private List<Course> SortColumn(IEnumerable<Course> courses, string sortOrder)
+        private IQueryable<Course> SortColumn(IQueryable<Course> courses, string sortOrder)
         {
             // Sort order parameters for each field
             ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -165,7 +143,32 @@ namespace EducationalWebApplication.Controllers
                     break;
             }
 
-            return courses.ToList();
+            return courses;
         }
+
+        [NonAction]
+        private async Task<CoursesViewModel> CoursesVM(IQueryable<Course> courses, string sortOrder, string search, int pageNo)
+        {
+            // Searching
+            if (search != null && search != string.Empty)
+            {
+                courses = _context.Courses.Include(d => d.Department).Where(c => c.Name.StartsWith(search));
+                ViewBag.search = search;
+            }
+
+            // Sorting
+            courses = SortColumn(courses, sortOrder);
+            ViewBag.sortOrder = sortOrder;
+
+            // Pagination
+            var page = await PaginatedList<Course>.Create(courses, pageNo, 4);
+
+            var crsVM = new CoursesViewModel();
+            crsVM.Courses = courses;
+            crsVM.SortOrder = sortOrder;
+            crsVM.Search = search;
+            crsVM.Page = page;
+            return crsVM;
+        }  
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Data.SqlClient;
 using Microsoft.AspNetCore.Hosting;
+using NuGet.Common;
 
 namespace EducationalWebApplication.Controllers
 {
@@ -19,43 +20,16 @@ namespace EducationalWebApplication.Controllers
         {
             _context = context;
         }
-        public IActionResult Index(string sortOrder, string search = "", int pageNo = 1)
+        public async Task<IActionResult> Index(string sortOrder, string search = "", int pageNo = 1)
         {
             var instructors = _context.Instructors
                                 .Include(d => d.Department)
                                 .Include(c => c.Course)
-                                .ToList();
+                                .AsQueryable();
 
-            // Searching
-            if (search != null && search != string.Empty)
-            {
-                instructors = _context.Instructors
-                                .Include(d => d.Department)
-                                .Include(c => c.Course)
-                                .Where(i => i.Name.StartsWith(search))
-                                .ToList();
-                ViewBag.search = search;
-            }
+            var InsViewModel = await InstructorsVM(instructors, search, sortOrder, pageNo);
 
-            // Sorting
-            instructors = SortColumn(instructors, sortOrder);
-            ViewBag.sortOrder = sortOrder;
-
-            // Pagination
-            int noOfRecordsPerPage = 4;
-            int noOfPages = Convert.ToInt32(
-                    Math.Ceiling(
-                        Convert.ToDouble(instructors.Count) / Convert.ToDouble(noOfRecordsPerPage)
-                    )
-                );
-
-            int noOfRecordsToSkip = (pageNo - 1) * noOfRecordsPerPage;
-            ViewBag.pageNo = pageNo;
-            ViewBag.noOfPages = noOfPages;
-
-            instructors = instructors.Skip(noOfRecordsToSkip).Take(noOfRecordsPerPage).ToList();
-
-            return View(instructors);
+            return View(InsViewModel);
         }
         public IActionResult Details(int? id)
         {
@@ -163,20 +137,26 @@ namespace EducationalWebApplication.Controllers
                 return NotFound();
 
             // Delete the photo from the server if it exists
-            if (!string.IsNullOrEmpty(ins.ImageURL) && ins.ImageURL != "default.png")
+            RemoveInsImage(ins.ImageURL);
+
+            _context.Instructors.Remove(ins);
+            _context.SaveChanges();
+            TempData["message"] = $"Instructor {ins.Name} Deleted Successfully!";
+            return RedirectToAction(nameof(Index));
+        }
+
+        [NonAction]
+        private void RemoveInsImage(string? imageURL)
+        {
+            if (!string.IsNullOrEmpty(imageURL) && imageURL != "default.png")
             {
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/assets/img/Instructors", ins.ImageURL);
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/assets/img/Instructors", imageURL);
 
                 if (System.IO.File.Exists(filePath))
                 {
                     System.IO.File.Delete(filePath);
                 }
             }
-
-            _context.Instructors.Remove(ins);
-            _context.SaveChanges();
-            TempData["message"] = $"Instructor {ins.Name} Deleted Successfully!";
-            return RedirectToAction(nameof(Index));
         }
 
         [NonAction]
@@ -200,10 +180,10 @@ namespace EducationalWebApplication.Controllers
         }
 
         [NonAction]
-        private List<Instructor> SortColumn(IEnumerable<Instructor> instructors, string sortOrder)
+        private IQueryable<Instructor> SortColumn(IQueryable<Instructor> instructors, string sortOrder)
         {
             // Sort order parameters for each field
-            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewBag.NameSortParm = sortOrder == "Name" ? "name_desc" : "Name";
             ViewBag.SalarySortParm = sortOrder == "Salary" ? "salary_desc" : "Salary";
             ViewBag.AddressSortParm = sortOrder == "Address" ? "address_desc" : "Address";
             ViewBag.DepartmentSortParm = sortOrder == "DepartmentID" ? "dept_desc" : "DepartmentID";
@@ -212,6 +192,9 @@ namespace EducationalWebApplication.Controllers
             // Sorting logic based on sortOrder parameter
             switch (sortOrder)
             {
+                case "Name":
+                    instructors = instructors.OrderBy(e => e.Name);
+                    break;
                 case "name_desc":
                     instructors = instructors.OrderByDescending(e => e.Name);
                     break;
@@ -240,11 +223,37 @@ namespace EducationalWebApplication.Controllers
                     instructors = instructors.OrderByDescending(e => e.Course.Name);
                     break;
                 default:
-                    instructors = instructors.OrderBy(e => e.Name); // Default sort by Name
+                    instructors = instructors.OrderBy(e => e.Id); // Default sort by ID
                     break;
             }
 
-            return instructors.ToList();
+            return instructors;
+        }
+
+        [NonAction]
+        private async Task<InstructorsViewModel> InstructorsVM(IQueryable<Instructor> instructors, string sortOrder, string search = "", int pageNo = 1)
+        {
+            // Searching
+            if (search != null && search != string.Empty)
+            {
+                instructors = _context.Instructors
+                    .Include(d => d.Department)
+                    .Include(c => c.Course)
+                    .Where(i => i.Name.StartsWith(search));
+            }
+
+            // Sorting
+            instructors = SortColumn(instructors, sortOrder);
+
+            // Pagination
+            var page = await PaginatedList<Instructor>.Create(instructors, pageNo, 4);
+
+            var insVM = new InstructorsViewModel();
+            insVM.Instructors = instructors;
+            insVM.Search = search;
+            insVM.SortOrder = sortOrder;
+            insVM.Page = page;
+            return insVM;
         }
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using EducationalWebApplication.Data;
 using EducationalWebApplication.Models;
+using EducationalWebApplication.ViewModels;
 
 namespace EducationalWebApplication.Controllers
 {
@@ -20,34 +21,13 @@ namespace EducationalWebApplication.Controllers
         }
 
         // GET: Departments
-        public IActionResult Index(string sortOrder, string search = "", int pageNo = 1)
+        public async Task<IActionResult> Index(string sortOrder, string search = "", int pageNo = 1)
         {
-            var departs = _context.Departments.ToList();
-            
-            // Searching
-            if (search != null && search != string.Empty)
-            {
-                departs = _context.Departments.Where(d => d.Name.StartsWith(search)).ToList();
-                ViewBag.search = search;
-            }
+            var departs = _context.Departments.AsQueryable();
 
-            departs = SortColumn(departs, sortOrder);
-            ViewBag.sortOrder = sortOrder;
+            var deprtVM = await DepartmentsVM(departs, sortOrder, search, pageNo);
 
-            // Pagination
-            int noOfRecordsPerPage = 4;
-            int noOfPages = Convert.ToInt32(
-                    Math.Ceiling(
-                        Convert.ToDouble(departs.Count) / Convert.ToDouble(noOfRecordsPerPage)
-                    )
-                );
-
-            int noOfRecordsToSkip = (pageNo - 1) * noOfRecordsPerPage;
-            ViewBag.pageNo = pageNo;
-            ViewBag.noOfPages = noOfPages;
-
-            departs = departs.Skip(noOfRecordsToSkip).Take(noOfRecordsPerPage).ToList();
-            return View(departs);
+            return View(deprtVM);
         }
 
         // GET: Departments/Details/5
@@ -183,7 +163,7 @@ namespace EducationalWebApplication.Controllers
         }
 
         [NonAction]
-        private List<Department> SortColumn(IEnumerable<Department> departments, string sortOrder)
+        private IQueryable<Department> SortColumn(IQueryable<Department> departments, string sortOrder)
         {
             // Sort order parameters for each field
             ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -206,7 +186,32 @@ namespace EducationalWebApplication.Controllers
                     break;
             }
 
-            return departments.ToList();
+            return departments;
+        }
+
+        [NonAction]
+        private async Task<DepartmentsViewModel> DepartmentsVM(IQueryable<Department> departs, string sortOrder, string search = "", int pageNo = 1)
+        {
+            // Searching
+            if (search != null && search != string.Empty)
+            {
+                departs = _context.Departments.Where(d => d.Name.StartsWith(search));
+                ViewBag.search = search;
+            }
+
+            // Sorting
+            departs = SortColumn(departs, sortOrder);
+            ViewBag.sortOrder = sortOrder;
+
+            // Pagination
+            var page = await PaginatedList<Department>.Create(departs, pageNo, 4);
+
+            DepartmentsViewModel viewModel = new DepartmentsViewModel();
+            viewModel.Departments = departs;
+            viewModel.Search = search;
+            viewModel.SortOrder = sortOrder;
+            viewModel.Page = page;
+            return viewModel;
         }
     }
 }
