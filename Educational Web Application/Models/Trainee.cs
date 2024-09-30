@@ -20,11 +20,11 @@ namespace EducationalWebApplication.Models
         [Required(ErrorMessage = "Enter the Address")]
         public string Address { get; set; }
 
-        public IEnumerable<CourseResult> CourseResults { get; set; }
+        public IEnumerable<CourseResult>? CourseResults { get; set; }
 
         [Required(ErrorMessage = "Please, Select The Department")]
         [ForeignKey(nameof(Department))]
         public int DepartmentID { get; set; }
-        public Department Department { get; set; }
+        public Department? Department { get; set; }
     }
 }

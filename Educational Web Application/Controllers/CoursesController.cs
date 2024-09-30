@@ -33,16 +33,14 @@ namespace EducationalWebApplication.Controllers
         [HttpPost]
         public IActionResult Create([Bind("Id,Name,Degree,MinDegree,Credits,DepartmentID")] Course crs)
         {
-            if (crs != null)
+            if (ModelState.IsValid)
             {
-                if((crs.Name is not null and not "") && (crs.DepartmentID is not 0))
-                {
-                    TempData["message"] = $"Course {crs.Name} Saved Successfully!";
-                    _context.Courses.Add(crs);
-                    _context.SaveChanges();
-                    return RedirectToAction("Index");
-                }
+                TempData["message"] = $"Course {crs.Name} Saved Successfully!";
+                _context.Courses.Add(crs);
+                _context.SaveChanges();
+                return RedirectToAction("Index");
             }
+
             ViewBag.DepartList = new SelectList(_context.Departments.ToList(), "Id", "Name", crs.DepartmentID);
             return View(crs);
         }
@@ -77,7 +75,7 @@ namespace EducationalWebApplication.Controllers
         [HttpPost]
         public IActionResult Edit([Bind("Id,Name,Degree,MinDegree,Credits,DepartmentID")] Course crs)
         {
-            if ((crs.Name is not null and not "") && (crs.DepartmentID is not 0))
+            if (ModelState.IsValid)
             {
                 TempData["message"] = $"Course {crs.Name} Updated successfully!";
                 _context.Courses.Update(crs);
@@ -102,7 +100,7 @@ namespace EducationalWebApplication.Controllers
         private IQueryable<Course> SortColumn(IQueryable<Course> courses, string sortOrder)
         {
             // Sort order parameters for each field
-            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewBag.NameSortParm = sortOrder == "Name" ? "name_desc" : "Name";
             ViewBag.DegreeSortParm = sortOrder == "Degree" ? "degree_desc" : "Degree";
             ViewBag.MinDegreeSortParm = sortOrder == "MinDegree" ? "minDegree_desc" : "MinDegree";
             ViewBag.CreditsSortParm = sortOrder == "Credits" ? "credits_desc" : "Credits";
@@ -111,6 +109,9 @@ namespace EducationalWebApplication.Controllers
             // Sorting logic based on sortOrder parameter
             switch (sortOrder)
             {
+                case "Name":
+                    courses = courses.OrderBy(e => e.Name);
+                    break;
                 case "name_desc":
                     courses = courses.OrderByDescending(e => e.Name);
                     break;
@@ -139,7 +140,7 @@ namespace EducationalWebApplication.Controllers
                     courses = courses.OrderByDescending(i => i.Department.Name);
                     break;
                 default:
-                    courses = courses.OrderBy(e => e.Name); // Default sort by Name
+                    courses = courses.OrderBy(e => e.Id); // Default sort by ID
                     break;
             }
 

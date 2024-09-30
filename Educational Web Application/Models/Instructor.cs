@@ -25,12 +25,12 @@ namespace EducationalWebApplication.Models
         [ForeignKey(nameof(Department))]
         [Required(ErrorMessage = "Enter the Department")]
         public int DepartmentID { get; set; }
-        public Department Department { get; set; }
+        public Department? Department { get; set; }
 
         [Required(ErrorMessage = "Enter the Course")]
         [ForeignKey(nameof(Course))]
         public int CourseID { get; set; }
-        public Course Course { get; set; }
+        public Course? Course { get; set; }
 
     }
 }

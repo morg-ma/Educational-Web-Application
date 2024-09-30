@@ -64,10 +64,7 @@ namespace EducationalWebApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Trainee trainee, IFormFile photo)
         {
-            if (!trainee.Name.IsNullOrEmpty() &&
-                trainee.Grade != 0 &&
-                !trainee.Address.IsNullOrEmpty() &&
-                trainee.DepartmentID != 0)
+            if (!ModelState.IsValid)
             {
                 trainee.ImageURL = UploadImage(photo, trainee.Name);
                 _context.Add(trainee);
@@ -109,9 +106,7 @@ namespace EducationalWebApplication.Controllers
                 return NotFound();
             }
 
-            if (!trainee.Name.IsNullOrEmpty() && 
-                trainee.Grade != 0 &&
-                !trainee.Address.IsNullOrEmpty())
+            if (!ModelState.IsValid)
             {
                 try
                 {

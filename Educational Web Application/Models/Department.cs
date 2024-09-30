@@ -17,8 +17,8 @@ namespace EducationalWebApplication.Models
         [DisplayName("Manager Name")]
         public string ManagerName { get; set; }
 
-        public IEnumerable<Course> Courses { get; set; }
-        public IEnumerable<Instructor> Instructors { get; set; }
-        public IEnumerable<Trainee> Trainees { get; set; }
+        public IEnumerable<Course>? Courses { get; set; }
+        public IEnumerable<Instructor>? Instructors { get; set; }
+        public IEnumerable<Trainee>? Trainees { get; set; }
     }
 }

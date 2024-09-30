@@ -61,7 +61,7 @@ namespace EducationalWebApplication.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create([Bind("Id,Name,ManagerName")] Department department)
         {
-            if (department != null)
+            if (ModelState.IsValid)
             {
                 _context.Add(department);
                 _context.SaveChanges();
@@ -99,7 +99,7 @@ namespace EducationalWebApplication.Controllers
                 return NotFound();
             }
 
-            if (department != null)
+            if (ModelState.IsValid)
             {
                 try
                 {
@@ -166,12 +166,15 @@ namespace EducationalWebApplication.Controllers
         private IQueryable<Department> SortColumn(IQueryable<Department> departments, string sortOrder)
         {
             // Sort order parameters for each field
-            ViewBag.NameSortParm = string.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewBag.NameSortParm = sortOrder == "Name" ? "name_desc" : "Name";
             ViewBag.ManagerSortParm = sortOrder == "ManagerName" ? "manager_desc" : "ManagerName";
 
             // Sorting logic based on sortOrder parameter
             switch (sortOrder)
             {
+                case "Name":
+                    departments = departments.OrderBy(e => e.Name); 
+                    break;
                 case "name_desc":
                     departments = departments.OrderByDescending(e => e.Name);
                     break;
@@ -182,10 +185,9 @@ namespace EducationalWebApplication.Controllers
                     departments = departments.OrderByDescending(e => e.ManagerName);
                     break;
                 default:
-                    departments = departments.OrderBy(e => e.Name); // Default sort by Name
+                    departments = departments.OrderBy(e => e.Id); // Default sort by ID
                     break;
             }
-
             return departments;
         }
 

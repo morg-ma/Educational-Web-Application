@@ -70,11 +70,7 @@ namespace EducationalWebApplication.Controllers
         [HttpPost]
         public IActionResult Edit(Instructor editedIns, IFormFile photo, string currentImage)
         {
-            if (editedIns.Name.IsNullOrEmpty() ||
-                editedIns.Salary == 0 ||
-                editedIns.Address.IsNullOrEmpty() ||
-                editedIns.CourseID == 0 ||
-                editedIns.DepartmentID == 0)
+            if (!ModelState.IsValid)
             {
                 ViewBag.CourseList = new SelectList(_context.Courses.ToList(), "Id", "Name");
                 ViewBag.DepartmentList = new SelectList(_context.Departments.ToList(), "Id", "Name");
@@ -109,11 +105,7 @@ namespace EducationalWebApplication.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(Instructor newIns, IFormFile photo)
         {
-            if (newIns.Name.IsNullOrEmpty() || 
-                newIns.Salary == 0 ||
-                newIns.Address.IsNullOrEmpty() ||
-                newIns.CourseID == 0 ||
-                newIns.DepartmentID == 0)
+            if (!ModelState.IsValid)
             {
                 ViewBag.CourseList = new SelectList(_context.Courses.ToList(), "Id", "Name");
                 ViewBag.DepartmentList = new SelectList(_context.Departments.ToList(), "Id", "Name");

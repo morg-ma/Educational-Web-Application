@@ -18,15 +18,15 @@ namespace EducationalWebApplication.Models
         [Range(10, 100, ErrorMessage = "The Course Minimum Degree must be between 10 and 100")]
         public int MinDegree { get; set; }
         [Required]
-        [Range(50, 200, ErrorMessage = "The Course Credits must be between 1 and 6")]
+        [Range(1, 6, ErrorMessage = "The Course Credits must be between 1 and 6")]
         public int Credits { get; set; }
 
-        [Range(1, 1000,ErrorMessage = "Must Select Department")]
+        [Required(ErrorMessage = "Must Select Department")]
         [ForeignKey(nameof(Department))]
         public int DepartmentID { get; set; }
-        public Department Department { get; set; }
+        public Department? Department { get; set; }
 
-        public IEnumerable<CourseResult> CourseResults { get; set; }
-        public IEnumerable<Instructor> Instructors { get; set; }
+        public IEnumerable<CourseResult>? CourseResults { get; set; }
+        public IEnumerable<Instructor>? Instructors { get; set; }
     }
 }
