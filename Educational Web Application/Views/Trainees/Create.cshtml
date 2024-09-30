@@ -1,13 +1,10 @@
-﻿@model Instructor
+﻿@model Trainee
 
 @{
-    ViewData["Title"] = "Create";
-    SelectList DeptList = ViewBag.DepartmentList;
-    SelectList CrsList = ViewBag.CourseList;
+    ViewData["Title"] = "Add";
 }
 
-<h1>Add Instructor</h1>
-
+<h1>Add Trainee</h1>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -19,14 +16,14 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label class="control-label">Image</label>
-                <input id="imageUpload" name="photo" type="file" class="form-control" accept="image/*" />
+                <label for="photo" class="control-label">Image</label>
+                <input id="imageUpload" name="photo" type="file" class="form-control"  accept="image/*"/>
                 <span id="errorMessage" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Salary" class="control-label"></label>
-                <input asp-for="Salary" class="form-control" />
-                <span asp-validation-for="Salary" class="text-danger"></span>
+                <label asp-for="Grade" class="control-label"></label>
+                <input asp-for="Grade" class="form-control" />
+                <span asp-validation-for="Grade" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Address" class="control-label"></label>
@@ -35,17 +32,10 @@
             </div>
             <div class="form-group">
                 <label asp-for="DepartmentID" class="control-label">Department</label>
-                <select asp-for="DepartmentID" class="form-control" asp-items="DeptList">
-                    <option value="0" >-- Select The Department --</option>
+                <select id="department" asp-for="DepartmentID" class ="form-control" asp-items="ViewBag.DepartmentID">
+                    <option value="0">-- Select the Department --</option>    
                 </select>
-                <span asp-validation-for="DepartmentID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CourseID" class="control-label">Course</label>
-                <select asp-for="CourseID" class="form-control" asp-items="CrsList">
-                    <option value="0">-- Select The Course --</option>
-                </select>
-                <span asp-validation-for="CourseID" class="text-danger"></span>
+                <span id="departErrorMessage" class="text-danger"></span>
             </div>
             <br />
             <div class="form-group">
@@ -55,6 +45,7 @@
         </form>
     </div>
 </div>
+
 <script>
     document.getElementById('FormCreate').addEventListener('submit', function (event) {
         let imageInput = document.getElementById('imageUpload');
@@ -84,5 +75,7 @@
     });
 </script>
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

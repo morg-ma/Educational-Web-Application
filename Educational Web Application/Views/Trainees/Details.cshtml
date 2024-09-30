@@ -1,0 +1,25 @@
+﻿@model Trainee
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Trainee Details</h1>
+
+<div class="container mt-5 mb-2">
+    <div class="card" style="width: 18rem;">
+        <img src="~/assets/img/Trainees/@(Model.ImageURL[0] == Model.Name[0]? Model.ImageURL : "default.png")" class="card-img-top" alt="Instructor Image">
+        <div class="card-body">
+            <h5 class="card-title" id="instructorName">@Model.Name</h5>
+            <p class="card-text">
+                <strong>Grade:</strong> <span>@Model.Grade</span><br>
+                <strong>Address:</strong> <span>@Model.Address</span><br>
+                <strong>Department:</strong> <span>@Model.Department.Name</span>
+            </p>
+        </div>
+    </div>
+</div>
+<div>
+    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a class="btn btn-outline-secondary" asp-action="Index">Back to List</a>
+</div>
