@@ -1,4 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using EducationalWebApplication.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EducationalWebApplication.Models
@@ -15,13 +18,21 @@ namespace EducationalWebApplication.Models
         [Range(50, 200, ErrorMessage = "The Course Degree must be between 50 and 200")]
         public int Degree { get; set; }
         [Required]
+        [DisplayName("Minimum Degree")]
         [Range(10, 100, ErrorMessage = "The Course Minimum Degree must be between 10 and 100")]
+        [Remote(
+            action:"CheckDegree", 
+            controller:"Courses", 
+            AdditionalFields="Degree", 
+            ErrorMessage = "The Minimum-Degree must be less than the Degree!"
+        )]
         public int MinDegree { get; set; }
         [Required]
         [Range(1, 6, ErrorMessage = "The Course Credits must be between 1 and 6")]
         public int Credits { get; set; }
 
-        [Required(ErrorMessage = "Must Select Department")]
+        [IsSelected]
+        [DisplayName("Department")]
         [ForeignKey(nameof(Department))]
         public int DepartmentID { get; set; }
         public Department? Department { get; set; }

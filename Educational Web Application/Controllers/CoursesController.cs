@@ -170,6 +170,13 @@ namespace EducationalWebApplication.Controllers
             crsVM.Search = search;
             crsVM.Page = page;
             return crsVM;
-        }  
+        }
+
+        private IActionResult CheckDegree(int MinDegree, int Degree)
+        {
+            if (MinDegree < Degree)
+                return Json(true);
+            return Json(false);
+        }
     }
 }

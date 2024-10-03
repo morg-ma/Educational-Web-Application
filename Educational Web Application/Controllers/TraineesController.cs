@@ -62,9 +62,9 @@ namespace EducationalWebApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Trainee trainee, IFormFile photo)
+        public async Task<IActionResult> Create(Trainee trainee, IFormFile? photo)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 trainee.ImageURL = UploadImage(photo, trainee.Name);
                 _context.Add(trainee);
@@ -106,7 +106,7 @@ namespace EducationalWebApplication.Controllers
                 return NotFound();
             }
 
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 try
                 {
@@ -176,10 +176,10 @@ namespace EducationalWebApplication.Controllers
         }
 
         [NonAction]
-        private string UploadImage(IFormFile photo, string stdName)
+        private string UploadImage(IFormFile? photo, string stdName)
         {
             string insPhoto = "default.png";
-            if (photo != null && photo.Length > 0)
+            if (photo != null && photo.Length > 0) 
             {
                 string extension = Path.GetExtension(photo.FileName);
                 string photoName = stdName + "_" + DateTime.Now.ToString("yyyyMMddmmss") + extension;

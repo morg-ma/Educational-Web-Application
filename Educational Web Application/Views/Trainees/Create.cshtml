@@ -35,7 +35,7 @@
                 <select id="department" asp-for="DepartmentID" class ="form-control" asp-items="ViewBag.DepartmentID">
                     <option value="0">-- Select the Department --</option>    
                 </select>
-                <span id="departErrorMessage" class="text-danger"></span>
+                <span asp-validation-for="DepartmentID" class="text-danger"></span>
             </div>
             <br />
             <div class="form-group">

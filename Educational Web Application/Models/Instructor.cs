@@ -2,6 +2,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+using EducationalWebApplication.ViewModels;
+
 namespace EducationalWebApplication.Models
 {
     public class Instructor
@@ -22,12 +24,14 @@ namespace EducationalWebApplication.Models
         [Required(ErrorMessage = "Enter the Address")]
         public string Address { get; set; }
 
+        [IsSelected]
+        [DisplayName("Department")]
         [ForeignKey(nameof(Department))]
-        [Required(ErrorMessage = "Enter the Department")]
         public int DepartmentID { get; set; }
         public Department? Department { get; set; }
 
-        [Required(ErrorMessage = "Enter the Course")]
+        [IsSelected]
+        [DisplayName("Course")]
         [ForeignKey(nameof(Course))]
         public int CourseID { get; set; }
         public Course? Course { get; set; }
