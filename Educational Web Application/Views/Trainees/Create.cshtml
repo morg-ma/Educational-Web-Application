@@ -45,37 +45,36 @@
         </form>
     </div>
 </div>
-
-<script>
-    document.getElementById('FormCreate').addEventListener('submit', function (event) {
-        let imageInput = document.getElementById('imageUpload');
-        let errorMessage = document.getElementById('errorMessage');
-        let file = imageInput.files[0];
-
-        // Reset error message
-        errorMessage.textContent = '';
-
-        // Check file type (only allow JPG, PNG, JPEG)
-        let allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-        if (!allowedTypes.includes(file.type)) {
-            errorMessage.textContent = 'Only .jpg, .jpeg, and .png files are allowed.';
-            event.preventDefault();
-            return;
-        }
-
-        // Check file size (limit to 2MB)
-        let maxSize = 2 * 1024 * 1024;  // 2MB in bytes
-        if (file.size > maxSize) {
-            errorMessage.textContent = 'Image size must be less than 2MB.';
-            event.preventDefault();
-            return;
-        }
-
-        // If everything is fine, the form will submit
-    });
-</script>
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        document.getElementById('FormCreate').addEventListener('submit', function (event) {
+            let imageInput = document.getElementById('imageUpload');
+            let errorMessage = document.getElementById('errorMessage');
+            let file = imageInput.files[0];
+
+            // Reset error message
+            errorMessage.textContent = '';
+
+            // Check file type (only allow JPG, PNG, JPEG)
+            let allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+            if (!allowedTypes.includes(file.type)) {
+                errorMessage.textContent = 'Only .jpg, .jpeg, and .png files are allowed.';
+                event.preventDefault();
+                return;
+            }
+
+            // Check file size (limit to 2MB)
+            let maxSize = 2 * 1024 * 1024;  // 2MB in bytes
+            if (file.size > maxSize) {
+                errorMessage.textContent = 'Image size must be less than 2MB.';
+                event.preventDefault();
+                return;
+            }
+
+            // If everything is fine, the form will submit
+        });
+    </script>
 }

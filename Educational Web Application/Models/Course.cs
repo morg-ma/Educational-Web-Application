@@ -21,9 +21,9 @@ namespace EducationalWebApplication.Models
         [DisplayName("Minimum Degree")]
         [Range(10, 100, ErrorMessage = "The Course Minimum Degree must be between 10 and 100")]
         [Remote(
-            action:"CheckDegree", 
-            controller:"Courses", 
-            AdditionalFields="Degree", 
+            action: "CheckDegree",
+            controller: "Courses",
+            AdditionalFields = "Degree",
             ErrorMessage = "The Minimum-Degree must be less than the Degree!"
         )]
         public int MinDegree { get; set; }

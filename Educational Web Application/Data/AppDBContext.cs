@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using EducationalWebApplication.Models;
+using EducationalWebApplication.ViewModels;
 namespace EducationalWebApplication.Data
 {
     public class AppDBContext : DbContext
@@ -152,5 +153,6 @@ namespace EducationalWebApplication.Data
                 new User { Id = 2, Username = "Mahmoud", Password = "1234"}
             );
         }
+        public DbSet<EducationalWebApplication.ViewModels.EnrollmentViewModel> EnrollmentViewModel { get; set; } = default!;
     }
 }

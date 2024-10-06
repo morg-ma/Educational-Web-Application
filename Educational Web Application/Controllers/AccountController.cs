@@ -54,7 +54,7 @@ namespace EducationalWebApplication.Controllers
             if (searchUser == null)
             {
                 ViewBag.Error = "The username or password is invalid!";
-                return View();
+                return View(user);
             }
 
             // Handle "Remember Me" functionality
@@ -80,7 +80,7 @@ namespace EducationalWebApplication.Controllers
             // Store the username in the session
             HttpContext.Session.SetString("User", user.Username);
 
-            TempData["Message"] = "Logged In Successfully!";
+            TempData["Message"] = $"Logged In Successfully!\nWelcome {user.Username}";
             return RedirectToAction("Index", "Home");
         }
 

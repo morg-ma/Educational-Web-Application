@@ -31,7 +31,7 @@ namespace EducationalWebApplication.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult Create([Bind("Id,Name,Degree,MinDegree,Credits,DepartmentID")] Course crs)
+        public IActionResult Create(Course crs)
         {
             if (ModelState.IsValid)
             {
@@ -44,7 +44,14 @@ namespace EducationalWebApplication.Controllers
             ViewBag.DepartList = new SelectList(_context.Departments.ToList(), "Id", "Name", crs.DepartmentID);
             return View(crs);
         }
-
+        
+        public IActionResult CheckDegree(int MinDegree, int Degree)
+        {
+            if (MinDegree < Degree)
+                return Json(true);
+            return Json(false);
+        }
+        
         public IActionResult Details(int? id)
         {
             if (id != null)
@@ -172,11 +179,6 @@ namespace EducationalWebApplication.Controllers
             return crsVM;
         }
 
-        private IActionResult CheckDegree(int MinDegree, int Degree)
-        {
-            if (MinDegree < Degree)
-                return Json(true);
-            return Json(false);
-        }
+        
     }
 }
