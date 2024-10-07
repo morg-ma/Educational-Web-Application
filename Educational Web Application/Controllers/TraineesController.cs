@@ -9,51 +9,41 @@ using EducationalWebApplication.Data;
 using EducationalWebApplication.Models;
 using EducationalWebApplication.ViewModels;
 using Microsoft.IdentityModel.Tokens;
+using EducationalWebApplication.Repository;
 
 namespace EducationalWebApplication.Controllers
 {
     public class TraineesController : Controller
     {
-        private readonly AppDBContext _context;
+        private readonly ITraineeRepository _traineeRepo;
+        private readonly IDepartmentRepository deptRepo;
 
-        public TraineesController(AppDBContext context)
+        public TraineesController(ITraineeRepository traineeRepo, IDepartmentRepository deptRepo)
         {
-            _context = context;
+            _traineeRepo = traineeRepo;
+            this.deptRepo = deptRepo;
         }
 
         // GET: Trainees
         public async Task<IActionResult> Index(string sortOrder, string search = "", int pageNo = 1)
         {
-            var trainees = _context.Trainees.Include(t => t.Department);
-
+            var trainees = _traineeRepo.GetAllWithDept();
             var traineesVM = await TraineesVM(trainees, sortOrder, search, pageNo);
 
             return View(traineesVM);
         }
 
         // GET: Trainees/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var trainee = await _context.Trainees
-                .Include(t => t.Department)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (trainee == null)
-            {
-                return NotFound();
-            }
-
-            return View(trainee);
+            var trainee = await _traineeRepo.GetByIdWithCrs(id);
+            return trainee != null? View(trainee) : NotFound();
         }
 
         // GET: Trainees/Create
         public IActionResult Create()
         {
-            ViewData["DepartmentID"] = new SelectList(_context.Departments, "Id", "Name");
+            ViewData["DepartmentID"] = new SelectList(deptRepo.GetAll(), "Id", "Name");
             return View();
         }
 
@@ -62,34 +52,29 @@ namespace EducationalWebApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Trainee trainee, IFormFile? photo)
+        public IActionResult Create(Trainee trainee, IFormFile? photo)
         {
             if (ModelState.IsValid)
             {
                 trainee.ImageURL = UploadImage(photo, trainee.Name);
-                _context.Add(trainee);
-                await _context.SaveChangesAsync();
+                _traineeRepo.Add(trainee);
+                _traineeRepo.Save();
                 TempData["message"] = $"Trainee {trainee.Name} Added Successfully";
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["DepartmentID"] = new SelectList(_context.Departments, "Id", "Name", trainee.DepartmentID);
+            ViewData["DepartmentID"] = new SelectList(deptRepo.GetAll(), "Id", "Name", trainee.DepartmentID);
             return View(trainee);
         }
 
         // GET: Trainees/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Edit(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var trainee = await _context.Trainees.FindAsync(id);
+            var trainee = _traineeRepo.GetById(id);
             if (trainee == null)
             {
                 return NotFound();
             }
-            ViewData["DepartmentID"] = new SelectList(_context.Departments, "Id", "Name", trainee.DepartmentID);
+            ViewData["DepartmentID"] = new SelectList(deptRepo.GetAll(), "Id", "Name", trainee.DepartmentID);
             ViewBag.CurrentImage = trainee.ImageURL;
             return View(trainee);
         }
@@ -99,7 +84,7 @@ namespace EducationalWebApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,ImageURL,Grade,Address,DepartmentID")] Trainee trainee, IFormFile photo, string currentImage)
+        public IActionResult Edit(int id, [Bind("Id,Name,ImageURL,Grade,Address,DepartmentID")] Trainee trainee, IFormFile? photo, string currentImage)
         {
             if (id != trainee.Id)
             {
@@ -118,8 +103,8 @@ namespace EducationalWebApplication.Controllers
                     {
                         trainee.ImageURL = currentImage;
                     }
-                    _context.Update(trainee);
-                    await _context.SaveChangesAsync();
+                    _traineeRepo.Update(trainee);
+                    _traineeRepo.Save();
                     TempData["message"] = $"Trainee {trainee.Name} Updated Successfully";
                 }
                 catch (DbUpdateConcurrencyException)
@@ -135,30 +120,30 @@ namespace EducationalWebApplication.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["DepartmentID"] = new SelectList(_context.Departments, "Id", "Name", trainee.DepartmentID);
+            ViewData["DepartmentID"] = new SelectList(deptRepo.GetAll(), "Id", "Name", trainee.DepartmentID);
             return View(trainee);
         }
 
         // POST: Trainees/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public IActionResult DeleteConfirmed(int id)
         {
-            var trainee = await _context.Trainees.FindAsync(id);
+            var trainee = _traineeRepo.GetById(id);
             if (trainee != null)
             {
                 RemoveStdImage(trainee.ImageURL);
-                _context.Trainees.Remove(trainee);
+                _traineeRepo.Delete(id);
+                _traineeRepo.Save();
                 TempData["message"] = $"Trainee {trainee.Name} Removed Successfully";
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool TraineeExists(int id)
         {
-            return _context.Trainees.Any(e => e.Id == id);
+            return _traineeRepo.GetById(id) != null? true : false;
         }
 
         [NonAction]
@@ -245,9 +230,7 @@ namespace EducationalWebApplication.Controllers
             // Searching
             if (search != null && search != string.Empty)
             {
-                trainees = _context.Trainees
-                    .Include(d => d.Department)
-                    .Where(i => i.Name.StartsWith(search));
+                trainees = _traineeRepo.GetAllByName(search);
             }
 
             // Sorting

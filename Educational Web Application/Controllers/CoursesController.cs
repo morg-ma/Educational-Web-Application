@@ -1,5 +1,6 @@
 ﻿using EducationalWebApplication.Data;
 using EducationalWebApplication.Models;
+using EducationalWebApplication.Repository;
 using EducationalWebApplication.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,16 +10,20 @@ namespace EducationalWebApplication.Controllers
 {
     public class CoursesController : Controller
     {
-        private readonly AppDBContext _context;
+        private readonly ICourseRepository crsRepo;
+        private readonly IDepartmentRepository deptRepo;
 
-        public CoursesController(AppDBContext context)
+        //private readonly AppDBContext _context;
+
+        public CoursesController(ICourseRepository crsRepo, IDepartmentRepository deptRepo) // AppDBContext context)
         {
-            _context = context;
+            // _context = context;
+            this.crsRepo = crsRepo;
+            this.deptRepo = deptRepo;
         }
         public async Task<IActionResult> Index(string sortOrder, string search = "", int pageNo = 1)
         {
-            var courses = _context.Courses.Include(d => d.Department).AsQueryable();
-
+            var courses = crsRepo.GetAllWithDepart();
             var crsVM = await CoursesVM(courses, sortOrder, search, pageNo);
             
             return View(crsVM);
@@ -27,7 +32,7 @@ namespace EducationalWebApplication.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            ViewBag.DepartList = new SelectList(_context.Departments.ToList(), "Id", "Name");
+            ViewBag.DepartList = new SelectList(deptRepo.GetAll(), "Id", "Name");
             return View();
         }
         [HttpPost]
@@ -36,12 +41,12 @@ namespace EducationalWebApplication.Controllers
             if (ModelState.IsValid)
             {
                 TempData["message"] = $"Course {crs.Name} Saved Successfully!";
-                _context.Courses.Add(crs);
-                _context.SaveChanges();
+                crsRepo.Add(crs);
+                crsRepo.Save();
                 return RedirectToAction("Index");
             }
 
-            ViewBag.DepartList = new SelectList(_context.Departments.ToList(), "Id", "Name", crs.DepartmentID);
+            ViewBag.DepartList = new SelectList(deptRepo.GetAll(), "Id", "Name", crs.DepartmentID);
             return View(crs);
         }
         
@@ -52,30 +57,20 @@ namespace EducationalWebApplication.Controllers
             return Json(false);
         }
         
-        public IActionResult Details(int? id)
+        public IActionResult Details(int id)
         {
-            if (id != null)
-            {
-                var crs = _context.Courses.Include(d => d.Department).FirstOrDefault(c => c.Id == id);
-                if (crs != null)
-                {
-                    return View(crs);
-                }
-            }
-            return NotFound();
+            var crs = crsRepo.GetByIdWithDept(id);
+            return crs != null? View(crs) : NotFound();
         }
 
         [HttpGet]
-        public IActionResult Edit(int? id)
+        public IActionResult Edit(int id)
         {
-            if (id != null)
+            var crs = crsRepo.GetByIdWithDept(id);
+            if (crs != null)
             {
-                var crs = _context.Courses.Include(d => d.Department).FirstOrDefault(c => c.Id == id);
-                if (crs != null)
-                {
-                    ViewBag.DepartList = new SelectList(_context.Departments.ToList(), "Id", "Name");
-                    return View(crs);
-                }
+                ViewBag.DepartList = new SelectList(deptRepo.GetAll(), "Id", "Name");
+                return View(crs);
             }
             return NotFound();
         }
@@ -85,11 +80,11 @@ namespace EducationalWebApplication.Controllers
             if (ModelState.IsValid)
             {
                 TempData["message"] = $"Course {crs.Name} Updated successfully!";
-                _context.Courses.Update(crs);
-                _context.SaveChanges();
+                crsRepo.Update(crs);
+                crsRepo.Save();
                 return RedirectToAction("Index");
             }
-            ViewBag.DepartList = new SelectList(_context.Departments.ToList(), "Id", "Name", crs.DepartmentID);
+            ViewBag.DepartList = new SelectList(deptRepo.GetAll(), "Id", "Name", crs.DepartmentID);
             return View(crs);
         }
 
@@ -98,8 +93,8 @@ namespace EducationalWebApplication.Controllers
         public IActionResult ConfirmedDelete(Course crs)
         {
             TempData["message"] = $"Course {crs.Name} Deleted Successfully!";
-            _context.Courses.Remove(crs);
-            _context.SaveChanges();
+            crsRepo.Delete(crs.Id);
+            crsRepo.Save();
             return RedirectToAction("Index");
         }
 
@@ -160,7 +155,7 @@ namespace EducationalWebApplication.Controllers
             // Searching
             if (search != null && search != string.Empty)
             {
-                courses = _context.Courses.Include(d => d.Department).Where(c => c.Name.StartsWith(search));
+                courses = crsRepo.GetAllByName(search);
                 ViewBag.search = search;
             }
 

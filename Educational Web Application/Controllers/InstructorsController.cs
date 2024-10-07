@@ -9,39 +9,35 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.Data.SqlClient;
 using Microsoft.AspNetCore.Hosting;
 using NuGet.Common;
+using EducationalWebApplication.Repository;
 
 namespace EducationalWebApplication.Controllers
 {
     public class InstructorsController : Controller
     {
-        private readonly AppDBContext _context;
+        private readonly IInstructorRepository insRepo;
+        private readonly ICourseRepository crsRepo;
+        private readonly IDepartmentRepository deptRepo;
 
-        public InstructorsController(AppDBContext context)
+        // private readonly AppDBContext _context;
+
+        public InstructorsController(IInstructorRepository insRepo, ICourseRepository crsRepo, IDepartmentRepository deptRepo) // AppDBContext context)
         {
-            _context = context;
+            // _context = context;
+            this.insRepo = insRepo;
+            this.crsRepo = crsRepo;
+            this.deptRepo = deptRepo;
         }
         public async Task<IActionResult> Index(string sortOrder, string search = "", int pageNo = 1)
         {
-            var instructors = _context.Instructors
-                                .Include(d => d.Department)
-                                .Include(c => c.Course)
-                                .AsQueryable();
-
+            var instructors = insRepo.GetInstructorsWithDepartAndCrs();
             var InsViewModel = await InstructorsVM(instructors, search, sortOrder, pageNo);
-
             return View(InsViewModel);
         }
         public IActionResult Details(int? id)
         {
-            if (id != null && id != 0)
-            {
-                var ins = _context.Instructors
-                    .Include(d => d.Department)
-                    .Include(c => c.Course)
-                    .FirstOrDefault(i => i.Id == id);
-                return View(ins);
-            }
-            return NotFound();
+            var ins = insRepo.GetByIdWithDepartAndCrs(id);
+            return ins == null? NotFound() : View(ins);
         }
 
         [HttpGet]
@@ -49,16 +45,13 @@ namespace EducationalWebApplication.Controllers
         {
             if (id != null && id != 0)
             {
-                var ins = _context.Instructors
-                    .Include(d => d.Department)
-                    .Include(c => c.Course)
-                    .FirstOrDefault(i => i.Id == id);
+                var ins = insRepo.GetByIdWithDepartAndCrs(id);
 
                 if (ins == null)
                     return NotFound();
 
-                ViewBag.CourseList = new SelectList(_context.Courses.ToList(), "Id", "Name");
-                ViewBag.DepartmentList = new SelectList(_context.Departments.ToList(), "Id", "Name");
+                ViewBag.CourseList = new SelectList(crsRepo.GetAll(), "Id", "Name");
+                ViewBag.DepartmentList = new SelectList(deptRepo.GetAll(), "Id", "Name");
 
                 ViewBag.CurrentImage = ins.ImageURL;
 
@@ -72,8 +65,8 @@ namespace EducationalWebApplication.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.CourseList = new SelectList(_context.Courses.ToList(), "Id", "Name");
-                ViewBag.DepartmentList = new SelectList(_context.Departments.ToList(), "Id", "Name");
+                ViewBag.CourseList = new SelectList(crsRepo.GetAll(), "Id", "Name");
+                ViewBag.DepartmentList = new SelectList(deptRepo.GetAll(), "Id", "Name");
                 return View(editedIns);
             }
 
@@ -86,17 +79,18 @@ namespace EducationalWebApplication.Controllers
                 editedIns.ImageURL = currentImage;
             }
 
-            _context.Instructors.Update(editedIns);
-            _context.SaveChanges();
+            insRepo.Update(editedIns);
+            insRepo.Save();
             TempData["message"] = $"Instructor {editedIns.Name} Updated successfully!";
+            
             return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
         public IActionResult Create()
         {
-            ViewBag.CourseList = new SelectList(_context.Courses.ToList(), "Id", "Name");
-            ViewBag.DepartmentList = new SelectList(_context.Departments.ToList(), "Id", "Name");
+            ViewBag.CourseList = new SelectList(crsRepo.GetAll(), "Id", "Name");
+            ViewBag.DepartmentList = new SelectList(deptRepo.GetAll(), "Id", "Name");
 
             return View();
         }
@@ -107,16 +101,15 @@ namespace EducationalWebApplication.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.CourseList = new SelectList(_context.Courses.ToList(), "Id", "Name");
-                ViewBag.DepartmentList = new SelectList(_context.Departments.ToList(), "Id", "Name");
+                ViewBag.CourseList = new SelectList(crsRepo.GetAll(), "Id", "Name");
+                ViewBag.DepartmentList = new SelectList(deptRepo.GetAll(), "Id", "Name");
                 return View(newIns);
             }
-
             newIns.ImageURL = UploadImage(photo, newIns.Name);
-                
-            _context.Instructors.Add(newIns);
-            _context.SaveChanges();
+            insRepo.Add(newIns);
+            insRepo.Save();
             TempData["message"] = $"Instructor {newIns.Name} Saved Successfully!";
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -124,16 +117,16 @@ namespace EducationalWebApplication.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int id)
         {
-            var ins = _context.Instructors.Find(id);
+            var ins = insRepo.GetById(id);
             if (ins == null)
                 return NotFound();
 
             // Delete the photo from the server if it exists
             RemoveInsImage(ins.ImageURL);
-
-            _context.Instructors.Remove(ins);
-            _context.SaveChanges();
+            insRepo.Delete(id);
+            insRepo.Save();
             TempData["message"] = $"Instructor {ins.Name} Deleted Successfully!";
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -228,10 +221,7 @@ namespace EducationalWebApplication.Controllers
             // Searching
             if (search != null && search != string.Empty)
             {
-                instructors = _context.Instructors
-                    .Include(d => d.Department)
-                    .Include(c => c.Course)
-                    .Where(i => i.Name.StartsWith(search));
+                instructors = insRepo.GetAllByName(search);
             }
 
             // Sorting
@@ -245,6 +235,7 @@ namespace EducationalWebApplication.Controllers
             insVM.Search = search;
             insVM.SortOrder = sortOrder;
             insVM.Page = page;
+
             return insVM;
         }
     }

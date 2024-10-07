@@ -8,44 +8,36 @@ using Microsoft.EntityFrameworkCore;
 using EducationalWebApplication.Data;
 using EducationalWebApplication.Models;
 using EducationalWebApplication.ViewModels;
+using EducationalWebApplication.Repository;
 
 namespace EducationalWebApplication.Controllers
 {
     public class DepartmentsController : Controller
     {
-        private readonly AppDBContext _context;
+        private readonly IDepartmentRepository deptRepo;
 
-        public DepartmentsController(AppDBContext context)
+        //private readonly AppDBContext _context;
+
+        public DepartmentsController(IDepartmentRepository deptRepo)// AppDBContext context)
         {
-            _context = context;
+            // _context = context;
+            this.deptRepo = deptRepo;
         }
 
         // GET: Departments
         public async Task<IActionResult> Index(string sortOrder, string search = "", int pageNo = 1)
         {
-            var departs = _context.Departments.AsQueryable();
-
+            var departs = deptRepo.GetAllQuery();
             var deprtVM = await DepartmentsVM(departs, sortOrder, search, pageNo);
 
             return View(deprtVM);
         }
 
         // GET: Departments/Details/5
-        public IActionResult Details(int? id)
+        public IActionResult Details(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var department =  _context.Departments
-                .FirstOrDefault(m => m.Id == id);
-            if (department == null)
-            {
-                return NotFound();
-            }
-
-            return View(department);
+            var department =  deptRepo.GetById(id);
+            return department != null? View(department) : NotFound();
         }
 
         // GET: Departments/Create
@@ -63,8 +55,8 @@ namespace EducationalWebApplication.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(department);
-                _context.SaveChanges();
+                deptRepo.Add(department);
+                deptRepo.Save();
                 TempData["message"] = $"Department {department.Name} Saved Successfully!";
                 return RedirectToAction(nameof(Index));
             }
@@ -72,19 +64,10 @@ namespace EducationalWebApplication.Controllers
         }
 
         // GET: Departments/Edit/5
-        public IActionResult Edit(int? id)
+        public IActionResult Edit(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var department = _context.Departments.Find(id);
-            if (department == null)
-            {
-                return NotFound();
-            }
-            return View(department);
+            var department = deptRepo.GetById(id);
+            return department != null ? View(department) : NotFound();
         }
 
         // POST: Departments/Edit/5
@@ -103,8 +86,8 @@ namespace EducationalWebApplication.Controllers
             {
                 try
                 {
-                    _context.Update(department);
-                    _context.SaveChanges();
+                    deptRepo.Update(department);
+                    deptRepo.Save();
                     TempData["message"] = $"Department {department.Name} Updated Successfully!";
                 }
                 catch (DbUpdateConcurrencyException)
@@ -124,21 +107,10 @@ namespace EducationalWebApplication.Controllers
         }
 
         // GET: Departments/Delete/5
-        public IActionResult Delete(int? id)
+        public IActionResult Delete(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var department = _context.Departments
-                .FirstOrDefault(m => m.Id == id);
-            if (department == null)
-            {
-                return NotFound();
-            }
-
-            return View(department);
+            var department = deptRepo.GetById(id);
+            return department != null ? View(department) : NotFound();
         }
 
         // POST: Departments/Delete/5
@@ -146,20 +118,20 @@ namespace EducationalWebApplication.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            var department = _context.Departments.Find(id);
+            var department = deptRepo.GetById(id);
             if (department == null)
             {
                 return NotFound();    
             }
-            _context.Departments.Remove(department);
-            _context.SaveChanges();
+            deptRepo.Delete(id);
+            deptRepo.Save();
             TempData["message"] = $"Department {department.Name} Deleted Successfully!";
             return RedirectToAction(nameof(Index));
         }
 
         private bool DepartmentExists(int id)
         {
-            return _context.Departments.Any(e => e.Id == id);
+            return deptRepo.GetById(id) != null? true : false;
         }
 
         [NonAction]
@@ -197,7 +169,7 @@ namespace EducationalWebApplication.Controllers
             // Searching
             if (search != null && search != string.Empty)
             {
-                departs = _context.Departments.Where(d => d.Name.StartsWith(search));
+                departs = deptRepo.GetAllByName(search);
                 ViewBag.search = search;
             }
 

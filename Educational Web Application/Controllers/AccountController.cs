@@ -1,5 +1,6 @@
 ﻿using EducationalWebApplication.Data;
 using EducationalWebApplication.Models;
+using EducationalWebApplication.Repository;
 using EducationalWebApplication.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -8,11 +9,11 @@ namespace EducationalWebApplication.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly AppDBContext _context;
+        private readonly IAccountRepository userRepo;
 
-        public AccountController(AppDBContext context)
+        public AccountController(IAccountRepository userRepo)
         {
-            _context = context;
+            this.userRepo = userRepo;
         }
 
         [HttpGet]
@@ -49,11 +50,11 @@ namespace EducationalWebApplication.Controllers
             }
 
             // Check credentials from the database
-            var searchUser = _context.Users.FirstOrDefault(u => u.Username == user.Username && u.Password == user.Password);
+            var searchUser = userRepo.GetByUsernameAndPassword(user.Username, user.Password);
 
             if (searchUser == null)
             {
-                ViewBag.Error = "The username or password is invalid!";
+                ViewBag.Error = "The username or password is incorrect!";
                 return View(user);
             }
 

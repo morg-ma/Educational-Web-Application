@@ -69,7 +69,8 @@
             <td>
                 <a class="btn btn-primary" asp-action="Edit" asp-route-id="@item.Id">Edit</a> | 
                 <a class="btn btn-secondary" asp-action="Details" asp-route-id="@item.Id">Details</a> | 
-                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="@Url.Action("Delete", new { id = item.Id })">Delete</button>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="@Url.Action("Delete", new { id = item.Id })">Delete</button> | 
+                <a class="btn btn-success" asp-controller="Enrollment" asp-action="Enroll" asp-route-id="@item.Id">Enroll Course</a>
             </td>
         </tr>
 }

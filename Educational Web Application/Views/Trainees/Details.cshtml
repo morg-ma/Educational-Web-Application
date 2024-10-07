@@ -7,19 +7,63 @@
 <h1>Trainee Details</h1>
 
 <div class="container mt-5 mb-2">
-    <div class="card" style="width: 18rem;">
-        <img src="~/assets/img/Trainees/@(Model.ImageURL[0] == Model.Name[0]? Model.ImageURL : "default.png")" class="card-img-top" alt="Instructor Image">
-        <div class="card-body">
-            <h5 class="card-title" id="instructorName">@Model.Name</h5>
-            <p class="card-text">
-                <strong>Grade:</strong> <span>@Model.Grade</span><br>
-                <strong>Address:</strong> <span>@Model.Address</span><br>
-                <strong>Department:</strong> <span>@Model.Department.Name</span>
-            </p>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card" style="width: 18rem;">
+                <img src="~/assets/img/Trainees/@(Model.ImageURL[0] == Model.Name[0]? Model.ImageURL : "default.png")" class="card-img-top" alt="Instructor Image">
+                <div class="card-body">
+                    <h5 class="card-title" id="instructorName">@Model.Name</h5>
+                    <p class="card-text">
+                        <strong>Grade:</strong> <span>@Model.Grade</span><br>
+                        <strong>Address:</strong> <span>@Model.Address</span><br>
+                        <strong>Department:</strong> <span>@Model.Department?.Name</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Course Name</th>
+                        <th>Score</th>
+                        <th>Degree</th>
+                        <th>Credits</th>
+                        <th>Department</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if(Model.CourseResults != null){
+                        @foreach (var crs in Model.CourseResults)
+                        {
+                            <tr>
+                                <td>@crs.Course?.Name</td>
+                                <td>@crs.Score</td>
+                                <td>@crs.Course?.Degree</td>
+                                <td>@crs.Course?.Credits</td>
+                                <td>@crs.Course?.Department?.Name</td>
+                                @if (crs.Score < crs.Course?.MinDegree)
+                                {
+                                    <td>
+                                        <span class="text-danger">Failed</span>
+                                    </td>
+                                }else
+                                {
+                                    <td>
+                                        <span class="text-success">Success</span>
+                                    </td>
+                                }
+                                
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
-</div>
-<div>
-    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a class="btn btn-outline-secondary" asp-action="Index">Back to List</a>
+    <div class="mt-3">
+        <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+        <a class="btn btn-outline-secondary" asp-action="Index">Back to List</a>
+    </div>
 </div>
