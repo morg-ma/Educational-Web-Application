@@ -1,21 +1,22 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using EducationalWebApplication.Models;
 using EducationalWebApplication.ViewModels;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 namespace EducationalWebApplication.Data
 {
-    public class AppDBContext : DbContext
+    public class AppDBContext : IdentityDbContext<ApplicationUser>
     {
         public DbSet<Instructor> Instructors { get; set; }
         public DbSet<Course> Courses { get; set; }
         public DbSet<Trainee> Trainees { get; set; }
         public DbSet<CourseResult> CourseResults { get; set; }
         public DbSet<Department> Departments { get; set; }
-        public DbSet<User> Users { get; set; }
 
         public AppDBContext(DbContextOptions options) : base(options) {}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Department>().HasData(
                 new Department { Id = 1, Name = "AI", ManagerName = "Mohamed"},
                 new Department { Id = 2, Name = "Data Science", ManagerName = "Farida"}
@@ -148,11 +149,6 @@ namespace EducationalWebApplication.Data
                 new CourseResult { Id = 7, Score = 99, CourseID = 4, TraineeID = 7},    
                 new CourseResult { Id = 8, Score = 100, CourseID = 4, TraineeID = 8}
             );
-            modelBuilder.Entity<User>().HasData(
-                new User { Id = 1, Username = "admin", Password = "admin" },
-                new User { Id = 2, Username = "Mahmoud", Password = "1234"}
-            );
         }
-        public DbSet<EducationalWebApplication.ViewModels.EnrollmentViewModel> EnrollmentViewModel { get; set; } = default!;
     }
 }

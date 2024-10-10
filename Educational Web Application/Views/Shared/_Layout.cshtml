@@ -21,7 +21,8 @@
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                @if (Context.Session.Keys.Count() > 0)
+                @* @if (Context.Session.Keys.Count() > 0) *@
+                @if (User.Identity.IsAuthenticated)
                 {
                     <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between col-4">
                         <ul class="navbar-nav flex-grow-1">
@@ -43,14 +44,26 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                             </li>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Role" asp-action="AddRole">Add Role</a>
+                                </li>
+                            }
                         </ul>
                     </div>
-
                     <div class="navbar-collapse collapse d-sm-inline-flex justify-content-end">
-                        <span>&#128100; Hello, @Context.Session.GetString("User")</span>
-                        <a asp-action="Logout" asp-controller="Account" class="btn btn-danger me-2 m-lg-2">Log out</a>
+                        <span>&#128100; Hello, @User.Identity.Name</span>
+                        <a asp-action="Logout" asp-controller="Account" class="btn btn-danger me-2 m-lg-2">Sign out</a>
                     </div>
                 }
+                @* else 
+                {
+                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-end">
+                        <a asp-action="Login" asp-controller="Account" class="btn btn-primary me-2 m-lg-2">Login</a>
+                        <a asp-action="Register" asp-controller="Account" class="btn btn-primary me-2 m-lg-2">Register</a>
+                    </div>
+                } *@
             </div>
         </nav>
     </header>

@@ -20,13 +20,17 @@
             </div>
             <div>
                 <input asp-for="RememberMe" type="checkbox" />
-                <label asp-for="RememberMe">Remember me</label>
+                <label asp-for="RememberMe"></label>
             </div>
-            <span class="text-danger">@ViewBag.Error</span>
+            <span asp-validation-for="Error" class="text-danger"></span>
             <div class="form-group mt-3">
                 <input type="submit" class="btn btn-primary w-100" />
             </div>
         </form>
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <a class="btn btn-outline-secondary" asp-action="ShowWebsite" asp-controller="Home">Back to Website</a>
+            <a class="btn btn-success" asp-action="Register">Register an Account</a>
+        </div>
     </div>
 </div>
 
