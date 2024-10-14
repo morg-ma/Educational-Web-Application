@@ -1,4 +1,4 @@
-﻿using EducationalWebApplication.Validators;
+﻿using EducationalWebApplication.ValidationAttributes;
 using EducationalWebApplication.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;

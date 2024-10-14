@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace EducationalWebApplication.Validators
+namespace EducationalWebApplication.ValidationAttributes
 {
     public class IsSelectedAttribute : ValidationAttribute
     {
