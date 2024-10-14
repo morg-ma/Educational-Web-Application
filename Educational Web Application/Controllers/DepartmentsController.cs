@@ -144,24 +144,14 @@ namespace EducationalWebApplication.Controllers
             ViewBag.ManagerSortParm = sortOrder == "ManagerName" ? "manager_desc" : "ManagerName";
 
             // Sorting logic based on sortOrder parameter
-            switch (sortOrder)
+            departments = sortOrder switch
             {
-                case "Name":
-                    departments = departments.OrderBy(e => e.Name); 
-                    break;
-                case "name_desc":
-                    departments = departments.OrderByDescending(e => e.Name);
-                    break;
-                case "ManagerName":
-                    departments = departments.OrderBy(e => e.ManagerName);
-                    break;
-                case "manager_desc":
-                    departments = departments.OrderByDescending(e => e.ManagerName);
-                    break;
-                default:
-                    departments = departments.OrderBy(e => e.Id); // Default sort by ID
-                    break;
-            }
+                "Name" => departments.OrderBy(e => e.Name),
+                "name_desc" => departments.OrderByDescending(e => e.Name),
+                "ManagerName" => departments.OrderBy(e => e.ManagerName),
+                "manager_desc" => departments.OrderByDescending(e => e.ManagerName),
+                _ => departments.OrderBy(e => e.Id),// Default sort by ID
+            };
             return departments;
         }
 

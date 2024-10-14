@@ -177,43 +177,20 @@ namespace EducationalWebApplication.Controllers
             ViewBag.CourseSortParm = sortOrder == "CourseID" ? "course_desc" : "CourseID";
 
             // Sorting logic based on sortOrder parameter
-            switch (sortOrder)
+            instructors = sortOrder switch
             {
-                case "Name":
-                    instructors = instructors.OrderBy(e => e.Name);
-                    break;
-                case "name_desc":
-                    instructors = instructors.OrderByDescending(e => e.Name);
-                    break;
-                case "Salary":
-                    instructors = instructors.OrderBy(e => e.Salary);
-                    break;
-                case "salary_desc":
-                    instructors = instructors.OrderByDescending(e => e.Salary);
-                    break;
-                case "Address":
-                    instructors = instructors.OrderBy(e => e.Address);
-                    break;
-                case "address_desc":
-                    instructors = instructors.OrderByDescending(e => e.Address);
-                    break;
-                case "DepartmentID":
-                    instructors = instructors.OrderBy(i => i.Department.Name);
-                    break;
-                case "dept_desc":
-                    instructors = instructors.OrderByDescending(i => i.Department.Name);
-                    break;
-                case "CourseID":
-                    instructors = instructors.OrderBy(e => e.Course.Name);
-                    break;
-                case "course_desc":
-                    instructors = instructors.OrderByDescending(e => e.Course.Name);
-                    break;
-                default:
-                    instructors = instructors.OrderBy(e => e.Id); // Default sort by ID
-                    break;
-            }
-
+                "Name" => instructors.OrderBy(e => e.Name),
+                "name_desc" => instructors.OrderByDescending(e => e.Name),
+                "Salary" => instructors.OrderBy(e => e.Salary),
+                "salary_desc" => instructors.OrderByDescending(e => e.Salary),
+                "Address" => instructors.OrderBy(e => e.Address),
+                "address_desc" => instructors.OrderByDescending(e => e.Address),
+                "DepartmentID" => instructors.OrderBy(i => i.Department.Name),
+                "dept_desc" => instructors.OrderByDescending(i => i.Department.Name),
+                "CourseID" => instructors.OrderBy(e => e.Course.Name),
+                "course_desc" => instructors.OrderByDescending(e => e.Course.Name),
+                _ => instructors.OrderBy(e => e.Id),// Default sort by ID
+            };
             return instructors;
         }
 

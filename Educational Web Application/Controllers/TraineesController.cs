@@ -185,39 +185,20 @@ namespace EducationalWebApplication.Controllers
             ViewBag.GradeSortParm = sortOrder == "Grade" ? "grade_desc" : "Grade";
             ViewBag.AddressSortParm = sortOrder == "Address" ? "address_desc" : "Address";
             ViewBag.DepartmentSortParm = sortOrder == "DepartmentID" ? "dept_desc" : "DepartmentID";
-            
-            // Sorting logic based on sortOrder parameter
-            switch (sortOrder)
-            {
-                case "Name":
-                    trainees = trainees.OrderBy(e => e.Name);
-                    break;
-                case "name_desc":
-                    trainees = trainees.OrderByDescending(e => e.Name);
-                    break;
-                case "Grade":
-                    trainees = trainees.OrderBy(e => e.Grade);
-                    break;
-                case "salary_desc":
-                    trainees = trainees.OrderByDescending(e => e.Grade);
-                    break;
-                case "Address":
-                    trainees = trainees.OrderBy(e => e.Address);
-                    break;
-                case "address_desc":
-                    trainees = trainees.OrderByDescending(e => e.Address);
-                    break;
-                case "DepartmentID":
-                    trainees = trainees.OrderBy(i => i.Department.Name);
-                    break;
-                case "dept_desc":
-                    trainees = trainees.OrderByDescending(i => i.Department.Name);
-                    break;
-                default:
-                    trainees = trainees.OrderBy(e => e.Id); // Default sort by ID
-                    break;
-            }
 
+            // Sorting logic based on sortOrder parameter
+            trainees = sortOrder switch
+            {
+                "Name" => trainees.OrderBy(e => e.Name),
+                "name_desc" => trainees.OrderByDescending(e => e.Name),
+                "Grade" => trainees.OrderBy(e => e.Grade),
+                "salary_desc" => trainees.OrderByDescending(e => e.Grade),
+                "Address" => trainees.OrderBy(e => e.Address),
+                "address_desc" => trainees.OrderByDescending(e => e.Address),
+                "DepartmentID" => trainees.OrderBy(i => i.Department.Name),
+                "dept_desc" => trainees.OrderByDescending(i => i.Department.Name),
+                _ => trainees.OrderBy(e => e.Id),// Default sort by ID
+            };
             return trainees;
         }
 

@@ -124,43 +124,20 @@ namespace EducationalWebApplication.Controllers
             ViewBag.DepartmentSortParm = sortOrder == "DepartmentID" ? "dept_desc" : "DepartmentID";
 
             // Sorting logic based on sortOrder parameter
-            switch (sortOrder)
+            courses = sortOrder switch
             {
-                case "Name":
-                    courses = courses.OrderBy(e => e.Name);
-                    break;
-                case "name_desc":
-                    courses = courses.OrderByDescending(e => e.Name);
-                    break;
-                case "Degree":
-                    courses = courses.OrderBy(e => e.Degree);
-                    break;
-                case "degree_desc":
-                    courses = courses.OrderByDescending(e => e.Degree);
-                    break;
-                case "MinDegree":
-                    courses = courses.OrderBy(e => e.MinDegree);
-                    break;
-                case "minDegree_desc":
-                    courses = courses.OrderByDescending(e => e.MinDegree);
-                    break;
-                case "DepartmentID":
-                    courses = courses.OrderBy(i => i.Department.Name);
-                    break;
-                case "Credits":
-                    courses = courses.OrderBy(e => e.Credits);
-                    break;
-                case "credits_desc":
-                    courses = courses.OrderByDescending(e => e.Credits);
-                    break;
-                case "dept_desc":
-                    courses = courses.OrderByDescending(i => i.Department.Name);
-                    break;
-                default:
-                    courses = courses.OrderBy(e => e.Id); // Default sort by ID
-                    break;
-            }
-
+                "Name" => courses.OrderBy(e => e.Name),
+                "name_desc" => courses.OrderByDescending(e => e.Name),
+                "Degree" => courses.OrderBy(e => e.Degree),
+                "degree_desc" => courses.OrderByDescending(e => e.Degree),
+                "MinDegree" => courses.OrderBy(e => e.MinDegree),
+                "minDegree_desc" => courses.OrderByDescending(e => e.MinDegree),
+                "DepartmentID" => courses.OrderBy(i => i.Department.Name),
+                "Credits" => courses.OrderBy(e => e.Credits),
+                "credits_desc" => courses.OrderByDescending(e => e.Credits),
+                "dept_desc" => courses.OrderByDescending(i => i.Department.Name),
+                _ => courses.OrderBy(e => e.Id),// Default sort by ID
+            };
             return courses;
         }
 
