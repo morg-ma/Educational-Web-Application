@@ -1,0 +1,66 @@
+﻿<div class="col-md-12">
+    @{
+        int prevPageNo = Model.Page.PageNo - 1;
+        if (!Model.Page.HasPrevPage)
+        {
+            prevPageNo = 1;
+        }
+        int nextPageNo = Model.Page.PageNo + 1;
+        if (!Model.Page.HasNextPage)
+        {
+            nextPageNo = Model.Page.TotalPages;
+        }
+    }
+    <nav>
+        <ul class="pagination justify-content-center">
+            <li class="page-item">
+                @if (Model.Page.HasPrevPage)
+                {
+                    <a class="page-link" asp-action="Index" asp-route-pageNo=@prevPageNo asp-route-search=@Model.Search asp-route-sortOrder="@Model.SortOrder">
+                        <span>Previous</span>
+                    </a>
+                }
+                else
+                {
+                    <label class="page-link">
+                        <span>Previous</span>
+                    </label>
+                }
+            </li>
+            @for (var i = 1; i <= Model.Page.TotalPages; i++)
+            {
+                if (i == Model.Page.PageNo)
+                {
+                    <li class="page-item active">
+                        <a class="page-link">
+                            <span>@i</span>
+                        </a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Index" asp-route-pageNo=@i asp-route-search=@Model.Search asp-route-sortOrder="@Model.SortOrder">
+                            <span>@i</span>
+                        </a>
+                    </li>
+                }
+
+            }
+            <li class="page-item">
+                @if (Model.Page.HasNextPage)
+                {
+                    <a class="page-link" asp-action="Index" asp-route-pageNo=@nextPageNo asp-route-search=@Model.Search asp-route-sortOrder="@Model.SortOrder">
+                        <span>Next</span>
+                    </a>
+                }
+                else
+                {
+                    <label class="page-link">
+                        <span>Next</span>
+                    </label>
+                }
+            </li>
+        </ul>
+    </nav>
+</div>

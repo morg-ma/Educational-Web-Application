@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EducationalWebApplication.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    [Migration("20241008171134_AuthTable")]
-    partial class AuthTable
+    [Migration("20241011151921_AddTablesWithIdentity")]
+    partial class AddTablesWithIdentity
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -120,44 +120,6 @@ namespace EducationalWebApplication.Migrations
                     b.HasIndex("DepartmentID");
 
                     b.ToTable("Courses");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Credits = 4,
-                            Degree = 100,
-                            DepartmentID = 1,
-                            MinDegree = 40,
-                            Name = "Machine Learning"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Credits = 3,
-                            Degree = 100,
-                            DepartmentID = 1,
-                            MinDegree = 50,
-                            Name = "Deep Learning"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Credits = 3,
-                            Degree = 100,
-                            DepartmentID = 2,
-                            MinDegree = 40,
-                            Name = "Linear Algebra"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Credits = 4,
-                            Degree = 100,
-                            DepartmentID = 2,
-                            MinDegree = 50,
-                            Name = "Data Science Tools"
-                        });
                 });
 
             modelBuilder.Entity("EducationalWebApplication.Models.CourseResult", b =>
@@ -184,64 +146,6 @@ namespace EducationalWebApplication.Migrations
                     b.HasIndex("TraineeID");
 
                     b.ToTable("CourseResults");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CourseID = 1,
-                            Score = 90,
-                            TraineeID = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CourseID = 1,
-                            Score = 95,
-                            TraineeID = 2
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CourseID = 2,
-                            Score = 92,
-                            TraineeID = 3
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CourseID = 2,
-                            Score = 100,
-                            TraineeID = 4
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CourseID = 3,
-                            Score = 80,
-                            TraineeID = 5
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CourseID = 3,
-                            Score = 86,
-                            TraineeID = 6
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CourseID = 4,
-                            Score = 99,
-                            TraineeID = 7
-                        },
-                        new
-                        {
-                            Id = 8,
-                            CourseID = 4,
-                            Score = 100,
-                            TraineeID = 8
-                        });
                 });
 
             modelBuilder.Entity("EducationalWebApplication.Models.Department", b =>
@@ -265,20 +169,6 @@ namespace EducationalWebApplication.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Departments");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ManagerName = "Mohamed",
-                            Name = "AI"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ManagerName = "Farida",
-                            Name = "Data Science"
-                        });
                 });
 
             modelBuilder.Entity("EducationalWebApplication.Models.Instructor", b =>
@@ -317,48 +207,6 @@ namespace EducationalWebApplication.Migrations
                     b.HasIndex("DepartmentID");
 
                     b.ToTable("Instructors");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Address = "Alex",
-                            CourseID = 1,
-                            DepartmentID = 1,
-                            ImageURL = "1.jpg",
-                            Name = "Ali",
-                            Salary = 20000.0
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Address = "Cairo",
-                            CourseID = 2,
-                            DepartmentID = 1,
-                            ImageURL = "2.jpg",
-                            Name = "Ahmed",
-                            Salary = 25000.0
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Address = "Alex",
-                            CourseID = 3,
-                            DepartmentID = 2,
-                            ImageURL = "3.jpg",
-                            Name = "Mahmoud",
-                            Salary = 21000.0
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Address = "Alex",
-                            CourseID = 4,
-                            DepartmentID = 2,
-                            ImageURL = "4.jpg",
-                            Name = "Aya",
-                            Salary = 19000.0
-                        });
                 });
 
             modelBuilder.Entity("EducationalWebApplication.Models.Trainee", b =>
@@ -392,80 +240,6 @@ namespace EducationalWebApplication.Migrations
                     b.HasIndex("DepartmentID");
 
                     b.ToTable("Trainees");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Address = "Alex",
-                            DepartmentID = 1,
-                            Grade = 3,
-                            ImageURL = "11.jpg",
-                            Name = "Marina"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Address = "Alex",
-                            DepartmentID = 1,
-                            Grade = 2,
-                            ImageURL = "22.jpg",
-                            Name = "Karim"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Address = "Alex",
-                            DepartmentID = 1,
-                            Grade = 3,
-                            ImageURL = "33.jpg",
-                            Name = "Salma"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Address = "Alex",
-                            DepartmentID = 1,
-                            Grade = 4,
-                            ImageURL = "44.jpg",
-                            Name = "Aysel"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Address = "Alex",
-                            DepartmentID = 2,
-                            Grade = 3,
-                            ImageURL = "55.jpg",
-                            Name = "Seif"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Address = "Alex",
-                            DepartmentID = 2,
-                            Grade = 1,
-                            ImageURL = "66.jpg",
-                            Name = "Amir"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Address = "Alex",
-                            DepartmentID = 2,
-                            Grade = 5,
-                            ImageURL = "77.jpg",
-                            Name = "Mostafa"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Address = "Alex",
-                            DepartmentID = 2,
-                            Grade = 2,
-                            ImageURL = "88.jpg",
-                            Name = "Fady"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

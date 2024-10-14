@@ -10,9 +10,11 @@ using Microsoft.Data.SqlClient;
 using Microsoft.AspNetCore.Hosting;
 using NuGet.Common;
 using EducationalWebApplication.Repository;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EducationalWebApplication.Controllers
 {
+    [Authorize]
     public class InstructorsController : Controller
     {
         private readonly IInstructorRepository insRepo;
@@ -61,7 +63,7 @@ namespace EducationalWebApplication.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(Instructor editedIns, IFormFile photo, string currentImage)
+        public IActionResult Edit(Instructor editedIns, IFormFile? photo, string? currentImage)
         {
             if (!ModelState.IsValid)
             {
@@ -97,7 +99,7 @@ namespace EducationalWebApplication.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Instructor newIns, IFormFile photo)
+        public IActionResult Create(Instructor newIns, IFormFile? photo)
         {
             if (!ModelState.IsValid)
             {
@@ -216,7 +218,7 @@ namespace EducationalWebApplication.Controllers
         }
 
         [NonAction]
-        private async Task<InstructorsViewModel> InstructorsVM(IQueryable<Instructor> instructors, string sortOrder, string search = "", int pageNo = 1)
+        private async Task<DataListViewModel<Instructor>> InstructorsVM(IQueryable<Instructor> instructors, string sortOrder, string search = "", int pageNo = 1)
         {
             // Searching
             if (search != null && search != string.Empty)
@@ -230,8 +232,8 @@ namespace EducationalWebApplication.Controllers
             // Pagination
             var page = await PaginatedList<Instructor>.Create(instructors, pageNo, 4);
 
-            var insVM = new InstructorsViewModel();
-            insVM.Instructors = instructors;
+            var insVM = new DataListViewModel<Instructor>();
+            insVM.ModelList = instructors;
             insVM.Search = search;
             insVM.SortOrder = sortOrder;
             insVM.Page = page;

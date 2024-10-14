@@ -2,24 +2,28 @@
 using EducationalWebApplication.Models;
 using EducationalWebApplication.Repository;
 using EducationalWebApplication.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace EducationalWebApplication.Controllers
 {
+    [Authorize]
     public class CoursesController : Controller
     {
         private readonly ICourseRepository crsRepo;
         private readonly IDepartmentRepository deptRepo;
+        private readonly IEnrollmentRepository enrollmentRepo;
 
         //private readonly AppDBContext _context;
 
-        public CoursesController(ICourseRepository crsRepo, IDepartmentRepository deptRepo) // AppDBContext context)
+        public CoursesController(ICourseRepository crsRepo, IDepartmentRepository deptRepo, IEnrollmentRepository enrollmentRepo) // AppDBContext context)
         {
             // _context = context;
             this.crsRepo = crsRepo;
             this.deptRepo = deptRepo;
+            this.enrollmentRepo = enrollmentRepo;
         }
         public async Task<IActionResult> Index(string sortOrder, string search = "", int pageNo = 1)
         {
@@ -98,6 +102,17 @@ namespace EducationalWebApplication.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpGet]
+        public IActionResult ShowTrainees(int crsId)
+        {
+            // show trainees whoes enrolled the course
+            var courseResults = enrollmentRepo.GetTraineesInCourse(crsId);
+            ViewBag.CourseResults = courseResults;
+
+            var course = crsRepo.GetByIdWithDept(crsId);
+            return course == null ? NotFound() : View(course);
+        }
+
         [NonAction]
         private IQueryable<Course> SortColumn(IQueryable<Course> courses, string sortOrder)
         {
@@ -150,7 +165,7 @@ namespace EducationalWebApplication.Controllers
         }
 
         [NonAction]
-        private async Task<CoursesViewModel> CoursesVM(IQueryable<Course> courses, string sortOrder, string search, int pageNo)
+        private async Task<DataListViewModel<Course>> CoursesVM(IQueryable<Course> courses, string sortOrder, string search, int pageNo)
         {
             // Searching
             if (search != null && search != string.Empty)
@@ -166,8 +181,8 @@ namespace EducationalWebApplication.Controllers
             // Pagination
             var page = await PaginatedList<Course>.Create(courses, pageNo, 4);
 
-            var crsVM = new CoursesViewModel();
-            crsVM.Courses = courses;
+            var crsVM = new DataListViewModel<Course>();
+            crsVM.ModelList = courses;
             crsVM.SortOrder = sortOrder;
             crsVM.Search = search;
             crsVM.Page = page;

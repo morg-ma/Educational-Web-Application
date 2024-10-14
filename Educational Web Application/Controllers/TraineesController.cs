@@ -10,9 +10,11 @@ using EducationalWebApplication.Models;
 using EducationalWebApplication.ViewModels;
 using Microsoft.IdentityModel.Tokens;
 using EducationalWebApplication.Repository;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EducationalWebApplication.Controllers
 {
+    [Authorize]
     public class TraineesController : Controller
     {
         private readonly ITraineeRepository _traineeRepo;
@@ -84,13 +86,8 @@ namespace EducationalWebApplication.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, [Bind("Id,Name,ImageURL,Grade,Address,DepartmentID")] Trainee trainee, IFormFile? photo, string currentImage)
+        public IActionResult Edit(Trainee trainee, IFormFile? photo, string? currentImage)
         {
-            if (id != trainee.Id)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
                 try
@@ -225,7 +222,7 @@ namespace EducationalWebApplication.Controllers
         }
 
         [NonAction]
-        private async Task<TraineesViewModel> TraineesVM(IQueryable<Trainee> trainees, string sortOrder, string search = "", int pageNo = 1)
+        private async Task<DataListViewModel<Trainee>> TraineesVM(IQueryable<Trainee> trainees, string sortOrder, string search = "", int pageNo = 1)
         {
             // Searching
             if (search != null && search != string.Empty)
@@ -239,8 +236,8 @@ namespace EducationalWebApplication.Controllers
             // Pagination
             var page = await PaginatedList<Trainee>.Create(trainees, pageNo, 5);
 
-            var stdVM = new TraineesViewModel();
-            stdVM.Trainees = trainees;
+            var stdVM = new DataListViewModel<Trainee>();
+            stdVM.ModelList = trainees;
             stdVM.Search = search;
             stdVM.SortOrder = sortOrder;
             stdVM.Page = page;

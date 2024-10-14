@@ -1,0 +1,78 @@
+﻿@model Course
+
+@{
+    ViewData["Title"] = "ShowTrainees";
+    List<CourseResult> courseResults = ViewBag.CourseResults;
+}
+
+<div>
+    <h1>Course</h1>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Degree)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Degree)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.MinDegree)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.MinDegree)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Credits)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Credits)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Department)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Department.Name)
+        </dd>
+    </dl>
+</div>
+<div class="mt-5 mb-3">
+    <h4>Trainees Whoes Enrolled This Course</h4>
+    <hr />
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Score</th>
+                <th>Grade</th>
+                <th>Department</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var cr in courseResults)
+            {
+                <tr>
+                    <td>@cr.Trainee?.Name</td>
+                    <td>@cr.Score</td>
+                    <td>@cr.Trainee?.Grade</td>
+                    <td>@cr.Trainee?.Department?.Name</td>
+                    <td>
+                        <a class="btn btn-outline-primary" asp-controller="Enrollment" asp-action="TraineeScore" asp-route-courseResultId="@cr.Id">Edit Score</a> |
+                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-url="@Url.Action("ConfirmUnEnroll", "Enrollment", new { stdId = cr.TraineeID, crsId = cr.CourseID, from = "Course" })">Remove</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div>
+    <a class="btn btn-secondary" asp-action="Index">Back to List</a>
+</div>
+
+<partial name="_DeleteModal" />

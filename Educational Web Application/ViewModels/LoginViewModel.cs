@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace EducationalWebApplication.ViewModels
 {
@@ -9,7 +10,12 @@ namespace EducationalWebApplication.ViewModels
         public string Username { get; set; }
         
         [Required(ErrorMessage = "Enter Your Password")]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
+        
+        [DisplayName("Remember Me")]
         public bool RememberMe { get; set; }
+
+        public string? Error {  get; set; }
     }
 }

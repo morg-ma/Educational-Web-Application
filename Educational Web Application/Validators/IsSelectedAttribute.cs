@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace EducationalWebApplication.ViewModels
+namespace EducationalWebApplication.Validators
 {
-    public class IsSelectedAttribute : ValidationAttribute 
+    public class IsSelectedAttribute : ValidationAttribute
     {
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {

@@ -1,6 +1,4 @@
 ﻿using EducationalWebApplication.Models;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EducationalWebApplication.ViewModels

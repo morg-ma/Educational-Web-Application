@@ -4,6 +4,7 @@
     ViewData["Title"] = "Enroll";
 
     List<Course> courses = ViewBag.Courses;
+    List<Course> enrolledCourses = ViewBag.EnrolledCourses;
 }
 
 <h1>Enroll Course</h1>
@@ -43,7 +44,19 @@
                             <td>@crs.Credits</td>
                             <td>@crs.Department.Name</td>
                             <td>
-                                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#enrollModal" data-url="@Url.Action("ConfirmEnrollment", new { stdId = Model.TraineeId, crsId = crs.Id })">Enroll</button>
+                                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#enrollModal" data-url="@Url.Action("ConfirmEnrollment", new { stdId = Model.TraineeId, crsId = crs.Id, from = "Trainee" })">Enroll</button>
+                            </td>
+                        </tr>
+                    }
+                    @foreach (var crs in enrolledCourses)
+                    {
+                        <tr>
+                            <td>@crs.Name</td>
+                            <td>@crs.Degree</td>
+                            <td>@crs.Credits</td>
+                            <td>@crs.Department.Name</td>
+                            <td>
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#enrollModal" data-url="@Url.Action("ConfirmUnEnroll", new { stdId = Model.TraineeId, crsId = crs.Id, from = "Trainee" })">Unenroll</button>
                             </td>
                         </tr>
                     }
@@ -55,7 +68,7 @@
         <a class="btn btn-outline-secondary" asp-action="Index" asp-controller="Trainees">Back to List</a>
     </div>
 </div>
-<!-- Delete Confirmation Modal -->
+<!-- Enrollment Confirmation Modal -->
 <div class="modal fade" id="enrollModal" tabindex="-1" aria-labelledby="enrollModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -64,7 +77,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                Are you sure you want to enroll this course?
+                Are you sure you want to make this action?
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
@@ -73,7 +86,7 @@
                 <form id="enrollForm" method="post" action="">
                     <!-- Anti-Forgery Token -->
                     @Html.AntiForgeryToken()
-                    <button type="submit" class="btn btn-success">Yes</button>
+                    <button type="submit" class="btn btn-primary">Yes</button>
                 </form>
             </div>
         </div>

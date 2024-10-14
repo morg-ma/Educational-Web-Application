@@ -9,9 +9,11 @@ using EducationalWebApplication.Data;
 using EducationalWebApplication.Models;
 using EducationalWebApplication.ViewModels;
 using EducationalWebApplication.Repository;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EducationalWebApplication.Controllers
 {
+    [Authorize]
     public class DepartmentsController : Controller
     {
         private readonly IDepartmentRepository deptRepo;
@@ -164,7 +166,7 @@ namespace EducationalWebApplication.Controllers
         }
 
         [NonAction]
-        private async Task<DepartmentsViewModel> DepartmentsVM(IQueryable<Department> departs, string sortOrder, string search = "", int pageNo = 1)
+        private async Task<DataListViewModel<Department>> DepartmentsVM(IQueryable<Department> departs, string sortOrder, string search = "", int pageNo = 1)
         {
             // Searching
             if (search != null && search != string.Empty)
@@ -180,8 +182,8 @@ namespace EducationalWebApplication.Controllers
             // Pagination
             var page = await PaginatedList<Department>.Create(departs, pageNo, 4);
 
-            DepartmentsViewModel viewModel = new DepartmentsViewModel();
-            viewModel.Departments = departs;
+            var viewModel = new DataListViewModel<Department>();
+            viewModel.ModelList = departs;
             viewModel.Search = search;
             viewModel.SortOrder = sortOrder;
             viewModel.Page = page;

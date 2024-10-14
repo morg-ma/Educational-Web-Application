@@ -1,4 +1,5 @@
-﻿using EducationalWebApplication.ViewModels;
+﻿using EducationalWebApplication.Validators;
+using EducationalWebApplication.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;

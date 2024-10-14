@@ -1,8 +1,7 @@
-﻿using System.ComponentModel;
+﻿using EducationalWebApplication.Validators;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
-using EducationalWebApplication.ViewModels;
 
 namespace EducationalWebApplication.Models
 {

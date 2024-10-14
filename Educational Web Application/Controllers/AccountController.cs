@@ -43,20 +43,24 @@ namespace EducationalWebApplication.Controllers
                 var result = await userManager.CreateAsync(appUser, userVM.Password);
                 if (result.Succeeded)
                 {
-                    // Assign to Role
-                    var roleResult = await userManager.AddToRoleAsync(appUser, "Admin");
-                    if (roleResult.Succeeded)
-                    {
-                        // Cookie
-                        await signInManager.SignInAsync(appUser, isPersistent: false);
-                        TempData["Message"] = $"Registered Successfully!\nWelcome {userVM.Username}";
-                        return RedirectToAction("Index", "Home");
-                    }
-                    foreach (var error in roleResult.Errors)
-                    {
-                        ModelState.AddModelError("", error.Description);
-                    }
-                    
+                    //// Assign to Role
+                    //var roleResult = await userManager.AddToRoleAsync(appUser, "Admin");
+                    //if (roleResult.Succeeded)
+                    //{
+                    //    // Cookie
+                    //    await signInManager.SignInAsync(appUser, isPersistent: false);
+                    //    TempData["Message"] = $"Registered Successfully!\nWelcome {userVM.Username}";
+                    //    return RedirectToAction("Index", "Home");
+                    //}
+                    //foreach (var error in roleResult.Errors)
+                    //{
+                    //    ModelState.AddModelError("", error.Description);
+                    //}
+                    // Cookie
+                    await signInManager.SignInAsync(appUser, isPersistent: false);
+                    TempData["Message"] = $"Registered Successfully!\nWelcome {userVM.Username}";
+                    return RedirectToAction("Index", "Home");
+
                 }
                 foreach (var error in result.Errors)
                 {
