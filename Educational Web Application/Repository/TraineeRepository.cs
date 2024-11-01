@@ -60,7 +60,7 @@ namespace EducationalWebApplication.Repository
         {
             return _context.Trainees
                     .Include(d => d.Department)
-                    .Where(i => i.Name.StartsWith(name));
+                    .Where(i => i.Name.Contains(name));
         }
     }
 }

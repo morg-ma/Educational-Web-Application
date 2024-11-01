@@ -57,7 +57,7 @@ namespace EducationalWebApplication.Repository
             return _context.Instructors
                     .Include(d => d.Department)
                     .Include(c => c.Course)
-                    .Where(i => i.Name.StartsWith(name));
+                    .Where(i => i.Name.Contains(name));
         }
     }
 }

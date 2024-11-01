@@ -36,7 +36,7 @@ namespace EducationalWebApplication.Repository
 
         public IQueryable<Course> GetAllByName(string name)
         {
-            return _context.Courses.Include(d => d.Department).Where(c => c.Name.StartsWith(name));
+            return _context.Courses.Include(d => d.Department).Where(c => c.Name.Contains(name));
         }
 
         public IQueryable<Course> GetAllWithDepart()

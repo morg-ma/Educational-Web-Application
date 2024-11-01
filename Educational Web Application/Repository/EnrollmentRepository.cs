@@ -52,6 +52,7 @@ namespace EducationalWebApplication.Repository
             return _context.CourseResults
                 .Where(cr => cr.TraineeID ==  id)
                 .Include(c => c.Course)
+                .ThenInclude(d => d.Department)
                 .Select(cr => cr.Course)
                 .ToList();
         }
