@@ -29,7 +29,11 @@ namespace EducationalWebApplication.Controllers
         {
             var courses = crsRepo.GetAllWithDepart();
             var crsVM = await CoursesVM(courses, sortOrder, search, pageNo);
-            
+            // If the request is an AJAX request, return the partial view only
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return PartialView("_CoursesTablePartial", crsVM);
+            }
             return View(crsVM);
         }
 

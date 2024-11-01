@@ -1,5 +1,6 @@
 ﻿using EducationalWebApplication.Data;
 using EducationalWebApplication.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace EducationalWebApplication.Repository
 {
@@ -18,8 +19,15 @@ namespace EducationalWebApplication.Repository
 
         public void Delete(int id)
         {
-            var dept = GetById(id);
-            _context.Remove(dept);
+            // First remove the instructors, courses, and the trainees whoes in the department
+            var dept = _context.Departments.Include(i => i.Instructors).Include(c => c.Courses).Include(t => t.Trainees).FirstOrDefault(d => d.Id == id);
+            if (dept != null)
+            {
+                _context.Courses.RemoveRange(dept.Courses);
+                _context.Instructors.RemoveRange(dept.Instructors);
+                _context.Trainees.RemoveRange(dept.Trainees);
+                _context.Remove(dept);
+            }
         }
 
         public List<Department> GetAll()
@@ -40,6 +48,21 @@ namespace EducationalWebApplication.Repository
         public Department GetById(int id)
         {
             return _context.Departments.Find(id);
+        }
+
+        public Department GetDeptWithCourses(int id)
+        {
+            return _context.Departments.Include(c => c.Courses).FirstOrDefault(d => d.Id == id);
+        }
+
+        public Department GetDeptWithInstructors(int id)
+        {
+            return _context.Departments.Include(c => c.Instructors).ThenInclude(c => c.Course).FirstOrDefault(d => d.Id == id);
+        }
+
+        public Department GetDeptWithTrainees(int id)
+        {
+            return _context.Departments.Include(c => c.Trainees).FirstOrDefault(d => d.Id == id);
         }
 
         public void Save()

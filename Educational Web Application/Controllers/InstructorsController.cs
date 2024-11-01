@@ -34,6 +34,11 @@ namespace EducationalWebApplication.Controllers
         {
             var instructors = insRepo.GetInstructorsWithDepartAndCrs();
             var InsViewModel = await InstructorsVM(instructors, search, sortOrder, pageNo);
+            // If the request is an AJAX request, return the partial view only
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return PartialView("_InstructorsTablePartial", InsViewModel);
+            }
             return View(InsViewModel);
         }
         public IActionResult Details(int? id)

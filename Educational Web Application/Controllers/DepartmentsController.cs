@@ -32,6 +32,13 @@ namespace EducationalWebApplication.Controllers
             var departs = deptRepo.GetAllQuery();
             var deprtVM = await DepartmentsVM(departs, sortOrder, search, pageNo);
 
+            // If the request is an AJAX request, return the partial view only
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return PartialView("_DepartmentsTablePartial", deprtVM);
+            }
+
+            // Otherwise, return the full view
             return View(deprtVM);
         }
 
@@ -129,6 +136,22 @@ namespace EducationalWebApplication.Controllers
             deptRepo.Save();
             TempData["message"] = $"Department {department.Name} Deleted Successfully!";
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult ShowCourses(int id)
+        {
+            var department = deptRepo.GetDeptWithCourses(id);
+            return View(department);
+        }
+        public IActionResult ShowInstructors(int id)
+        {
+            var department = deptRepo.GetDeptWithInstructors(id);
+            return View(department);
+        }
+        public IActionResult ShowTrainees(int id)
+        {
+            var department = deptRepo.GetDeptWithTrainees(id);
+            return View(department);
         }
 
         private bool DepartmentExists(int id)

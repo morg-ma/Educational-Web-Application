@@ -19,8 +19,14 @@ namespace EducationalWebApplication.Repository
 
         public void Delete(int id)
         {
-            var crs = GetById(id);
-            _context.Remove(crs);
+            var crs = _context.Courses.Include(cr => cr.CourseResults).Include(i => i.Instructors).FirstOrDefault(c => c.Id == id);
+            if (crs != null)
+            {
+                _context.CourseResults.RemoveRange(crs.CourseResults);
+                _context.Instructors.RemoveRange(crs.Instructors);
+                _context.Remove(crs);
+            }
+            
         }
 
         public List<Course> GetAll()

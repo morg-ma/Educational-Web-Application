@@ -1,66 +1,24 @@
-﻿<div class="col-md-12">
-    @{
-        int prevPageNo = Model.Page.PageNo - 1;
-        if (!Model.Page.HasPrevPage)
+﻿<nav aria-label="Page navigation">
+    <ul class="pagination">
+        @if (Model.Page.HasPrevPage)
         {
-            prevPageNo = 1;
-        }
-        int nextPageNo = Model.Page.PageNo + 1;
-        if (!Model.Page.HasNextPage)
-        {
-            nextPageNo = Model.Page.TotalPages;
-        }
-    }
-    <nav>
-        <ul class="pagination justify-content-center">
             <li class="page-item">
-                @if (Model.Page.HasPrevPage)
-                {
-                    <a class="page-link" asp-action="Index" asp-route-pageNo=@prevPageNo asp-route-search=@Model.Search asp-route-sortOrder="@Model.SortOrder">
-                        <span>Previous</span>
-                    </a>
-                }
-                else
-                {
-                    <label class="page-link">
-                        <span>Previous</span>
-                    </label>
-                }
+                <a class="page-link" href="?pageNo=@(Model.Page.PageNo - 1)&search=@Model.Search&sortOrder=@Model.SortOrder">Previous</a>
             </li>
-            @for (var i = 1; i <= Model.Page.TotalPages; i++)
-            {
-                if (i == Model.Page.PageNo)
-                {
-                    <li class="page-item active">
-                        <a class="page-link">
-                            <span>@i</span>
-                        </a>
-                    </li>
-                }
-                else
-                {
-                    <li class="page-item">
-                        <a class="page-link" asp-action="Index" asp-route-pageNo=@i asp-route-search=@Model.Search asp-route-sortOrder="@Model.SortOrder">
-                            <span>@i</span>
-                        </a>
-                    </li>
-                }
+        }
 
-            }
-            <li class="page-item">
-                @if (Model.Page.HasNextPage)
-                {
-                    <a class="page-link" asp-action="Index" asp-route-pageNo=@nextPageNo asp-route-search=@Model.Search asp-route-sortOrder="@Model.SortOrder">
-                        <span>Next</span>
-                    </a>
-                }
-                else
-                {
-                    <label class="page-link">
-                        <span>Next</span>
-                    </label>
-                }
+        @for (var i = 1; i <= Model.Page.TotalPages; i++)
+        {
+            <li class="page-item @(Model.Page.PageNo == i ? "active" : "")">
+                <a class="page-link" href="?pageNo=@i&search=@Model.Search&sortOrder=@Model.SortOrder">@i</a>
             </li>
-        </ul>
-    </nav>
-</div>
+        }
+
+        @if (Model.Page.HasNextPage)
+        {
+            <li class="page-item">
+                <a class="page-link" href="?pageNo=@(Model.Page.PageNo + 1)&search=@Model.Search&sortOrder=@Model.SortOrder">Next</a>
+            </li>
+        }
+    </ul>
+</nav>

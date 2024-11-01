@@ -10,7 +10,7 @@
     <div class="row">
         <div class="col-md-3">
             <div class="card" style="width: 18rem;">
-                <img src="~/assets/img/Trainees/@(Model.ImageURL[0] == Model.Name[0]? Model.ImageURL : "default.png")" class="card-img-top" alt="Instructor Image">
+                <img src="~/assets/img/Trainees/@(Model.ImageURL[0] == Model.Name[0]? Model.ImageURL : "default.png")" width="300" height="300" style="object-fit: cover" class="card-img-top" alt="Instructor Image">
                 <div class="card-body">
                     <h5 class="card-title" id="instructorName">@Model.Name</h5>
                     <p class="card-text">

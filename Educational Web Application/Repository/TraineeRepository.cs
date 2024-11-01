@@ -22,8 +22,12 @@ namespace EducationalWebApplication.Repository
         }
         public void Delete(int id)
         {
-            var trainee = GetById(id);
-            _context.Remove(trainee);
+            var trainee = _context.Trainees.Include(cr => cr.CourseResults).FirstOrDefault(t => t.Id == id);
+            if (trainee != null)
+            {
+                _context.CourseResults.RemoveRange(trainee.CourseResults);
+                _context.Remove(trainee);
+            }
         }
         public List<Trainee> GetAll()
         {

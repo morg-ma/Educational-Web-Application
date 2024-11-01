@@ -32,6 +32,12 @@ namespace EducationalWebApplication.Controllers
             var trainees = _traineeRepo.GetAllWithDept();
             var traineesVM = await TraineesVM(trainees, sortOrder, search, pageNo);
 
+            // If the request is an AJAX request, return the partial view only
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return PartialView("_TraineesTablePartial", traineesVM);
+            }
+
             return View(traineesVM);
         }
 
