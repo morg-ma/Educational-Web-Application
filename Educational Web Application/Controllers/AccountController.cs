@@ -1,8 +1,5 @@
-﻿using EducationalWebApplication.Data;
-using EducationalWebApplication.Models;
-using EducationalWebApplication.Repository;
+﻿using EducationalWebApplication.Models;
 using EducationalWebApplication.ViewModels;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;

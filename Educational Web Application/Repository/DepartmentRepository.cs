@@ -20,10 +20,11 @@ namespace EducationalWebApplication.Repository
         public void Delete(int id)
         {
             // First remove the instructors, courses, and the trainees whoes in the department
-            var dept = _context.Departments.Include(i => i.Instructors).Include(c => c.Courses).Include(t => t.Trainees).FirstOrDefault(d => d.Id == id);
+            var dept = _context.Departments.Include(i => i.Instructors).Include(t => t.Trainees).Include(c => c.Courses).ThenInclude(cr => cr.CourseResults).FirstOrDefault(d => d.Id == id);
             if (dept != null)
             {
                 _context.Courses.RemoveRange(dept.Courses);
+                _context.CourseResults.RemoveRange(dept.Courses.SelectMany(c => c.CourseResults));
                 _context.Instructors.RemoveRange(dept.Instructors);
                 _context.Trainees.RemoveRange(dept.Trainees);
                 _context.Remove(dept);
